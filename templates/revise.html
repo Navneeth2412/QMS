@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quoatation</title>
+    <style>
+       h1 {text-align: center;}
+       .quotation-section {text-align: left;
+       padding-left: 150px;}
+        * {
+            font-family: arial, sans-serif;
+            box-sizing: border-box;
+        }
+        
+        .done{
+           left: 12%;
+           
+           position: absolute;
+           transform: translateX(-25%);
+        }
+        .cancel{
+            left: 16%;
+            
+            position: absolute;
+            transform: translateX(-30%);
+         }
+        .revise{
+           right: 25%;
+           
+           position: absolute;
+           transform: translateX(-25%);
+        }
+        .desc{
+           width: 5;
+           height: 5;
+           display: inline-block;
+           border: 1px solid #948f8f;
+           padding: 7px 11px;
+        }
+        #demo { border-collapse: collapse; }
+        #demo tr:nth-child(odd) { background: #f2f2f2; }
+        #demo td { padding: 10px; }
+        .table-section {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+   <img src="https://s23.q4cdn.com/929369069/files/doc_downloads/multimedia-center/Horizontal-Logo-CMYK-[JPG].jpg"  height="50">
+   
+
+    {% if filename %}
+        <div class="filename"><p><b>Offer:</b>{{ filename }}</p></div>
+    {% endif %}
+    {% if date %}
+        <div class="filename"><p><b>Date:</b>{{ date }}</p></div>
+    {% endif %}
+    <h1>Quotation (Revise) </h1>
+   
+    <!-- Quotation Section -->
+    <br>
+    <div class="quotation-section">
+        <form action="/update" method="post">
+            <div class="part_desc"  id="description"></div>
+             <label for="part_no">Enter Part Number:</label>
+             <input type="text" style="margin-left:70px" id="part_no" name="part_no" placeholder="Enter Part Number..." value="{{ request.form['part_no'] }}" oninput="search()"  required>  
+            <br>
+            <br>
+            <label for="quantity">Enter Quantity</label>
+            <input type="text" style="margin-left:105px" id="quantity" name="quantity" placeholder="Enter Quantity...">
+            <button type="submit" name="btn" value="update">Update</button>
+            <button type="submit" name="btn" value="addprod" formaction="/addrev">Add Product</button>
+             <br>
+            
+        </form>
+        <br>
+   
+        <form action="/deleterev" method="post">
+            <label for="del_id">Enter Part Number to Delete:</label>
+            <input type="text" id="del_id" name="del_id" placeholder="Enter Part Number..." >
+            <button type="submit" name="btn" value="delete">Delete!</button>
+        </form>
+        
+        <br>
+        <form action="/totalrev" method="post">
+           
+           <button type="subimt" name="btn" value="total">Get Total</button>
+        </form>
+    </div>
+        <br>
+        <br>
+        <div class="table-section">
+            <table id="demo" style="margin-left:auto;margin-right:auto;">
+                {% for row in range(1, sheet.max_row + 1) %}
+                    <tr>
+                        {% for col in range(1, sheet.max_column + 1): %}
+                            <td>{{ sheet.cell(row, col).value }}</td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </table>
+            <br>
+        <form action="/index" method="post">
+            <button class="done" type="submit" name="btn" value="Done">Done</button>
+        </form>
+        <form action="/delrev" method="post">
+            <button class="cancel" type="submit" name="btn" value="cancel">Cancel</button>
+         </form>
+    
+            <br>
+        </div>
+        <br>
+        <br>
+    </div>
+    <script>
+        function search() {
+            var partNumber = $('#part_no').val();
+            $.post('/search', {part_no: partNumber}, function(data) {
+                var resultDiv = $('#description');
+                resultDiv.empty();
+                if (data.part_data) {
+                    resultDiv.append('<p><strong>Part Description:</strong> ' + data.part_data[1] + '</p>');
+                } else {
+                    resultDiv.append('<p>No Part found with the given Part number.</p>');
+                }
+            });
+        }
+    </script>
+   
+</body>
+</html>

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Search</title>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+</head>
+<body>
+    <h1>Employee Search</h1>
+    <form id="searchForm">
+        <label for="part_id">Employee ID:</label>
+        <input type="text" id="part_id" name="part_id" oninput="search()">
+    </form>
+    <div id="result"></div>
+    <script>
+        function search() {
+            var employeeId = $('#part_id').val();
+            $.post('/search', {part_id: employeeId}, function(data) {
+                var resultDiv = $('#result');
+                resultDiv.empty();
+                if (data.part_data) {
+                    resultDiv.append('<p><strong>Name:</strong> ' + data.part_data[1] + '</p>');
+                    resultDiv.append('<p><strong>Position:</strong> ' + data.part_data[2] + '</p>');
+                } else {
+                    resultDiv.append('<p>No employee found with the given ID.</p>');
+                }
+            });
+        }
+    </script>
+</body>
+</html>
+
+
+
