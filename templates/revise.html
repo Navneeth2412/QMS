@@ -62,6 +62,9 @@
     {% if date %}
         <div class="filename"><p><b>Date:</b>{{ date }}</p></div>
     {% endif %}
+    {% if date_time %}
+        <div class="filename"><p><b>Time:</b> {{ date_time }}</p></div>
+    {% endif %}
     <h1>Quotation (Revise) </h1>
    
     <!-- Quotation Section -->
@@ -73,7 +76,6 @@
              <label for="part_no">Enter Part Number:</label>
              <input type="text" style="margin-left:70px" id="part_no" name="part_no" placeholder="Enter Part Number..." value="{{ request.form['part_no'] }}" oninput="search()"  required>  
              </div>
-            <br>
             <br>
             <label for="quantity">Enter Quantity</label>
             <input type="text" style="margin-left:105px" id="quantity" name="quantity" placeholder="Enter Quantity...">

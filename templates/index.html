@@ -7,6 +7,7 @@
      <title>Quoatation</title>
      <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
      <style>
+
         h1 {text-align: center;}
         .quotation-section {text-align: left;
         padding-left: 150px;}
@@ -16,6 +17,18 @@
          }
          .revise{
             right: 24.5%;
+            
+            position: absolute;
+            transform: translateX(-25%);
+         }
+         .revisetxt{
+            right: 12%;
+            
+            position: absolute;
+            transform: translateX(-25%);
+         }
+         .viewtxt{
+            right: 12%;
             
             position: absolute;
             transform: translateX(-25%);
@@ -42,8 +55,7 @@
             
             position: absolute;
             transform: translateX(-30%);
-         }
-        
+         }        
          .desc{
             width: 5;
             height: 5;
@@ -81,13 +93,13 @@
             <form action="/revise" method="post">
             
                 <button class="revise" type="submit" name="btn" value="revise" >Revise</button>
-                <input type="text" class="file" style="margin-left: 1070px;"  id="file" name="file" placeholder="Enter Quote number..." required>
+                <input class="revisetxt" type="text" class="file" style="margin-left: 1070px;"  id="file" name="file" placeholder="Enter Quote number..." required>
             </form>
             <br>
             <form action="/view" method="post">
-            
+            <br>
                 <button class="view" type="submit" name="btn" value="revise" >View Quote</button>
-                <input type="text" class="file" style="margin-left: 1070px;"  id="file" name="file" placeholder="Enter Quote number..." required>
+                <input class="viewtxt" type="text" class="file" style="margin-left: 1070px;"  id="file" name="file" placeholder="Enter Quote number..." required>
             </form>
         </div>
     
@@ -104,7 +116,7 @@
             <br>
              <label for="quantity">Enter Quantity</label>
              <input type="text" style="margin-left:105px" id="quantity" name="quantity" placeholder="Enter Quantity...">
-             <button type="submit" name="btn" value="copy" formaction="/copy">Add</button>
+             <button class ="add" type="submit" name="btn" value="copy" formaction="/copy">Add</button>
               <br>
          </form>
          <br>

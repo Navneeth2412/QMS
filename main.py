@@ -59,7 +59,7 @@ def convert_to_words(num):
         words += tens[num // 10] + " "  
     num %= 10  
     if num>= 1 and num<= 9:  
-        words += ones[num] + " "  
+        words += ones[num] + " "  + "Only"
     return words.strip() 
 
 #--------------------------------------FUNCTION FOR CREATING A NEW QUOTE-----------------------------------------
@@ -115,6 +115,8 @@ def revise():
     filename = file[:10]
     work = wb.sheetnames[-2]
     ws = wb[work]
+    now = datetime.now() # current date and time
+    date_time = now.strftime("%I:%M %p")
     print("inside revise function")
     for row in range(1,ws.max_row+1):
         for cell in range(1,ws.max_column+1):
@@ -128,7 +130,7 @@ def revise():
 
     filename1 = filename+"-" +wb.sheetnames[-1]
 
-    return render_template('revise.html',filename=filename1,date=d, result_message=None, sheet=ws1)
+    return render_template('revise.html',filename=filename1,date=d,date_time=date_time, result_message=None, sheet=ws1)
 
 #------------------------------SHOW TABLE TO REVISE---------------------------
 
@@ -152,6 +154,8 @@ def addrev():
     wb = openpyxl.load_workbook(file)
     res = len(wb.sheetnames)
     ws = wb.worksheets[res-1]
+    now = datetime.now() # current date and time
+    date_time = now.strftime("%I:%M %p")
     if request.method == 'POST':
         part_no = request.form['part_no']
         quantity = request.form['quantity']
@@ -198,13 +202,15 @@ def addrev():
 
         filename1 = filename+"-" +wb.sheetnames[-1]
 
-        return render_template('revise.html',filename=filename1, result_message=None, sheet=ws, part_data = part_data,date= d)
+        return render_template('revise.html',filename=filename1, result_message=None, sheet=ws,date_time=date_time, part_data = part_data,date= d)
     return render_template('revise.html',filename=filename1,  sheet=ws, part_data = part_data,date=d)
 
 #------------------------------CANCEL FOR REVISION------------------------------
 
 @app.route('/delrev', methods=['POST'])
 def cancelrev():
+    now = datetime.now() # current date and time
+    date_time = now.strftime("%I:%M %p")
     wb = openpyxl.load_workbook(file)
     print(file)
     sheet = wb.sheetnames[-1]
@@ -217,7 +223,7 @@ def cancelrev():
     #     filename = file[:10] + "-" + wb.sheetnames[-1]
     # else:
     filename = file[:10] + "-" + wb.sheetnames[-1]
-    return render_template('revise.html',filename=filename,date=d, result_message=None, sheet=ws)
+    return render_template('revise.html',filename=filename,date=d, date_time=date_time,result_message=None, sheet=ws)
 
 #-------------------------------UPDATE FOR REVISION------------------------------
 @app.route('/update', methods=['POST'])
@@ -225,6 +231,8 @@ def update():
     wb = openpyxl.load_workbook(file)
     res = len(wb.sheetnames)
     ws = wb.worksheets[res-1]
+    now = datetime.now() # current date and time
+    date_time = now.strftime("%I:%M %p")
 
     part_no = request.form['part_no']
     quant = request.form['quantity']
@@ -233,7 +241,7 @@ def update():
         if ws.cell(row=cell,column=1).value == part_no:
             ws.cell(row=cell,column=4,value=quant)
     wb.save(file)
-    return render_template("revise.html",filename=filename1,date=d, result_message=None, sheet=ws)
+    return render_template("revise.html",filename=filename1,date=d, date_time=date_time,result_message=None, sheet=ws)
 
 
 #---------------------------------DELETE FOR REVISON------------------------------
@@ -241,7 +249,8 @@ def update():
 @app.route('/deleterev' , methods=['POST'])
 def deleterev():
     del_id = request.form['del_id']
-
+    now = datetime.now() # current date and time
+    date_time = now.strftime("%I:%M %p")
     wb = openpyxl.load_workbook(file)
     res = len(wb.sheetnames)
     ws = wb.worksheets[res-1]
@@ -251,13 +260,15 @@ def deleterev():
             del_row(ws, row_number)
             wb.save(file)
             break
-    return render_template('revise.html', date=d,filename = filename1,result_message=None,sheet=ws)
+    return render_template('revise.html', date=d,filename = filename1,date_time=date_time,result_message=None,sheet=ws)
 
 
 #------------------------------TOTAL FOR REVISION-----------------------------------
 @app.route('/totalrev', methods=['POST'])
 def totalrev():
     global ws
+    now = datetime.now() # current date and time
+    date_time = now.strftime("%I:%M %p")
     if request.method == 'POST':
         wb = load_workbook(file)
         res = len(wb.sheetnames)
@@ -278,7 +289,7 @@ def totalrev():
     ws.cell(row=ws.max_row,column=3, value="TOTAL PRICE")
 
     
-    return render_template('revise.html',filename=filename1,date=d, sheet=ws)
+    return render_template('revise.html',filename=filename1,date_time=date_time,date=d, sheet=ws)
 
 
 
@@ -293,9 +304,10 @@ def createquote():
     res= len(wb.sheetnames)
     ws = wb.worksheets[res-1]
     filename = file[:10]
-
+    now = datetime.now() # current date and time
+    date_time = now.strftime("%I:%M %p")
     print("THIS IS FILE NAME============================",file)
-    return render_template("add.html", result_message=None,date=d,filename= filename,sheet=ws)
+    return render_template("add.html", result_message=None,date=d,date_time=date_time, filename= filename,sheet=ws)
 
 #---------------------------------ADD NEW PRODUCT FOR QUOTE--------------------------
 
@@ -329,18 +341,21 @@ def addnew():
 @app.route('/delete', methods=['POST'])
 def delete():
     global ws  # Use the global ws variable
+    now = datetime.now() # current date and time
+    date_time = now.strftime("%I:%M %p")
     if request.method == 'POST':
         del_id = request.form['del_id']
 
         wb = openpyxl.load_workbook(file)
         ws = wb.active
+        
 
         for row_number in range(2, ws.max_row + 1):
             if ws.cell(row=row_number, column=1).value == del_id:
                 del_row(ws, row_number)
                 wb.save(file)
                 break
-        return render_template('index.html',filename=filename,date=d, result_message=None,sheet=ws)
+        return render_template('index.html',filename=filename,date=d, date_time=date_time,result_message=None,sheet=ws)
     
 
 #----------------------------VIEWING QUOTE-----------------------------------
@@ -348,6 +363,8 @@ def delete():
 def view():
     global ws  # Use the global ws variable
     global filename
+    now = datetime.now() # current date and time
+    date_time = now.strftime("%I:%M %p")
     print("in view")
     print(filename)
     if request.method == 'POST':
@@ -364,10 +381,10 @@ def view():
                 filename1 = filename+"-" +wb.sheetnames[-1]
         except:
             result_message = "No File Found"
-            return render_template("index.html",result_message=result_message,filename=filename,date=d, sheet=ws)
+            return render_template("index.html",result_message=result_message,date_time=date_time,filename=filename,date=d, sheet=ws)
         print("this is file", file)
 
-    return render_template("view.html",filename=filename1,date=d, sheet=ws)
+    return render_template("view.html",filename=filename1,date=d,date_time=date_time, sheet=ws)
 
 
 #-------------------------------ADDING NEW PRODUCT---------------------------------
@@ -401,9 +418,11 @@ def search():
 @app.route('/deleted', methods=['POST'])
 
 def cancel():
+    now = datetime.now() # current date and time
+    date_time = now.strftime("%I:%M %p")
     print(file)
     os.remove(file)
-    return render_template('index.html',filename=filename,date=d, sheet=ws)
+    return render_template('index.html',filename=filename,date_time=date_time,date=d, sheet=ws)
 
 
 
@@ -457,7 +476,8 @@ def copy():
     print("in copy")
     wb = openpyxl.load_workbook(file)
     ws = wb.active 
-
+    now = datetime.now() # current date and time
+    date_time = now.strftime("%I:%M %p")
     if request.method == 'POST':
         part_no = request.form['part_no']
         quantity = request.form['quantity']
@@ -515,7 +535,7 @@ def copy():
             result_message = f"Part details for ID {part_no} not found."
         filename = file[:10]
 
-        return render_template('index.html', result_message=None,filename=filename,date=d, sheet=ws)
+        return render_template('index.html', result_message=None,date_time=date_time,filename=filename,date=d, sheet=ws)
     return render_template('index.html',filename=filename,date=d, sheet=ws)
 
 #----------------------------------GETTING TOTAL PRICE-------------------------------
@@ -523,6 +543,9 @@ def copy():
 @app.route('/total', methods=['POST'])
 def total():
     global ws
+
+    now = datetime.now() # current date and time
+    date_time = now.strftime("%I:%M %p")
     if request.method == 'POST':
         wb = load_workbook(file)
         ws = wb.active
@@ -548,19 +571,21 @@ def total():
     ws.cell(row=ws.max_row,column=2, value="TOTAL PRICE")
 
     
-    return render_template('index.html',filename=filename,date=d, sheet=ws)
+    return render_template('index.html',filename=filename,date=d,date_time=date_time, sheet=ws)
 
 #------------------------------SHOWS TABLE-----------------------------------------
 
 @app.route('/index', methods=['POST'])
 def index():
     global ws  # Use the global ws variable
+    now = datetime.now() # current date and time
+    date_time = now.strftime("%I:%M %p")
     if request.method == 'POST':
         wb = load_workbook(file)
         res = len(wb.sheetnames)
         ws = wb.worksheets[res-1]
     
-    return render_template("index.html",filename=filename,date=d, sheet=ws)
+    return render_template("index.html",filename=filename,date_time=date_time,date=d, sheet=ws)
 
 
 #----------MAIN----------
