@@ -32,6 +32,11 @@
            position: absolute;
            transform: translateX(-25%);
         }
+        .part_desc{
+            position: absolute;
+            right: 15%;
+            top: 39.5%;
+         }
         .desc{
            width: 5;
            height: 5;
@@ -63,9 +68,11 @@
     <br>
     <div class="quotation-section">
         <form action="/update" method="post">
+            <div>
             <div class="part_desc"  id="description"></div>
              <label for="part_no">Enter Part Number:</label>
              <input type="text" style="margin-left:70px" id="part_no" name="part_no" placeholder="Enter Part Number..." value="{{ request.form['part_no'] }}" oninput="search()"  required>  
+             </div>
             <br>
             <br>
             <label for="quantity">Enter Quantity</label>

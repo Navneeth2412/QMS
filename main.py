@@ -36,6 +36,32 @@ def del_row(ws, row_nummber):
     return render_template('index.html', result_message=None, sheet=ws)
 
 
+
+#---------------------------------------CONVERTING TO WORDS----------------------------------------------------
+
+def convert_to_words(num):  
+    if num == 0:  
+        return "Zero"  
+    ones = ["", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine"]  
+    tens = ["", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"]  
+    teens = ["Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"]  
+    words = ""
+    if num>= 1000:  
+        words += ones[num // 1000] + " thousand "  
+    num %= 1000  
+    if num>= 100:  
+        words += ones[num // 100] + " hundred "  
+    num %= 100  
+    if num>= 10 and num<= 19:  
+        words += teens[num - 10] + " "  
+    # num = 0  
+    elif num>= 20:
+        words += tens[num // 10] + " "  
+    num %= 10  
+    if num>= 1 and num<= 9:  
+        words += ones[num] + " "  
+    return words.strip() 
+
 #--------------------------------------FUNCTION FOR CREATING A NEW QUOTE-----------------------------------------
 
 def new_quote():
@@ -396,7 +422,7 @@ def add():
     filename = file[:10]
 
     t = date.today()
-    
+               
     d= t.strftime("%d-%m-%Y")
     now = datetime.now() # current date and time
     date_time = now.strftime("%I:%M %p")
@@ -410,7 +436,7 @@ def add():
         part_data = get_part_data(part_no)
 
 
-        # Load the source workbook
+        # Load the source workbook           mmmmv,v.                  
         source_workbook = load_workbook("price2.xlsx", read_only=True)
         source_sheet = source_workbook.active
 
@@ -505,15 +531,21 @@ def total():
         for cell in range(2,ws.max_row+1):
             t = float(ws.cell(row=cell,column=5).value)
             total += t
-
+            
        
         ftotal = round(total,2)
         ws[result_column + str(ws.max_row+1)].value = ftotal
+    
+
+    words = convert_to_words(int(total))
+    print(words)
+    
 
     for cell in range(1,ws.max_column):
         ws.cell(row=ws.max_row, column=cell, value=" ")
-        
-    ws.cell(row=ws.max_row,column=3, value="TOTAL PRICE")
+    
+    ws.cell(row=ws.max_row,column=3,value=words)
+    ws.cell(row=ws.max_row,column=2, value="TOTAL PRICE")
 
     
     return render_template('index.html',filename=filename,date=d, sheet=ws)
