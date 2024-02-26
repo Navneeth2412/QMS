@@ -17,7 +17,7 @@ def copy_row(part_data,target_sheet, quantity):
     # source_row = source_sheet[row_number]
     target_max = target_sheet.max_row+1
     target_column = target_sheet.max_column+1
-    count = 0
+    count = 1
     for cell in part_data:
         count+=1
         
@@ -25,7 +25,7 @@ def copy_row(part_data,target_sheet, quantity):
     
     target_sheet.cell(row=target_max, column=target_column-2, value=quantity)
     print("printing this")
-    print(target_sheet.cell(row=target_max, column=target_column-2))
+    print(target_sheet.cell(row=target_max, column=target_column-2).value)
 
 
 
@@ -33,7 +33,7 @@ def del_row(ws, row_nummber):
     # Your existing del_row function
     ws.delete_rows(row_nummber)
 
-    return render_template('index.html', result_message=None, sheet=ws)
+    return render_template('revise.html', result_message=None, sheet=ws)
 
 
 
@@ -87,9 +87,9 @@ def new_quote():
     wb.save(file)
     
     ws = wb.active
-    l = ['PART NUMBER', 'ITEMP DESCRIPTION', 'PRICE (USD)', 'QTY', 'TOTAL PRICE']
+    l = ['SERIAL NO','PART NUMBER', 'ITEMP DESCRIPTION', 'PRICE (USD)', 'QTY', 'TOTAL PRICE']
 
-    for cell in range(1, 6):    
+    for cell in range(1, 7):    
         ws.cell(row=1, column=cell,value= l[cell-1])
             
     wb.save(file)
@@ -173,20 +173,42 @@ def addrev():
                 # Copy the row and update quantity
         copy_row(part_data, ws, quantity)
 
-                # Calculate total price and update in the target sheet
-        price_column = 'C'
-        result_column = 'E'
-        quan_column = 'D'
+
+
+
+        if ws.cell(row=ws.max_row-1,column=1).value == 'SERIAL NO':
+            ws.cell(row=ws.max_row,column=1,value=1)
+        else:
+            count_row = int(ws.cell(row=ws.max_row-1,column=1).value)
+            print("this is the serial number count",count_row)
+            if count_row >= 1:
+                    count = ws.cell(row=ws.max_row-1,column=1).value
+                    ws.cell(row=ws.max_row,column=1,value=count+1)
+            # else:
+            #     ws.cell(row=ws.max_row,column=1,value=count)
+                
+        #         # Calculate total price and update in the target sheet
+        price_column = 'D'
+        result_column = 'F'
+        quan_column = 'E'
+                # Calculate total price and update in the target she
 
                 # Ensure that the values are not None before converting to float
 
         quan_value = ws[quan_column + str(ws.max_row)].value
         print("this is quan value", quan_value)
+        price = ws[price_column + str(ws.max_row)].value
+        print(price)
+        price2 = format(price,'.2f')
+        ws[price_column + str(ws.max_row)].value = price2
         price_value = ws[price_column + str(ws.max_row)].value
         print("this is price value", price_value)
 
         if quan_value is not None and price_value is not None:
-            ws[result_column + str(ws.max_row)] = float(price_value) * float(quan_value)
+            total_pr = ws[result_column + str(ws.max_row)]
+            total_pr = float(price_value) * float(quan_value)
+            total_price = format(total_pr,'.2f')
+            ws[result_column + str(ws.max_row)] = total_price
         else:
             # Handle the case where either quantity or price is None
             result_message = "Error: Quantity or Price is None."
@@ -234,12 +256,12 @@ def update():
     now = datetime.now() # current date and time
     date_time = now.strftime("%I:%M %p")
 
-    part_no = request.form['part_no']
+    slno = request.form['slno']
     quant = request.form['quantity']
 
     for cell in range(1,ws.max_row+1):
-        if ws.cell(row=cell,column=1).value == part_no:
-            ws.cell(row=cell,column=4,value=quant)
+        if ws.cell(row=cell,column=1).value == int(slno):
+            ws.cell(row=cell,column=5,value=quant)
     wb.save(file)
     return render_template("revise.html",filename=filename1,date=d, date_time=date_time,result_message=None, sheet=ws)
 
@@ -248,7 +270,9 @@ def update():
 
 @app.route('/deleterev' , methods=['POST'])
 def deleterev():
+    print("inside deleterev")
     del_id = request.form['del_id']
+    print("delete id ====", del_id , type(del_id))
     now = datetime.now() # current date and time
     date_time = now.strftime("%I:%M %p")
     wb = openpyxl.load_workbook(file)
@@ -256,7 +280,9 @@ def deleterev():
     ws = wb.worksheets[res-1]
 
     for row_number in range(2, ws.max_row +1):
-        if ws.cell(row=row_number, column=1).value == del_id:
+        print("row number ======" ,row_number)
+        print(type(ws.cell(row=row_number, column=1).value))
+        if ws.cell(row=row_number, column=1).value == int(del_id):
             del_row(ws, row_number)
             wb.save(file)
             break
@@ -493,23 +519,39 @@ def copy():
         part_data = get_part_data(part_no)
 
         print(part_data)
+        
       
         copy_row(part_data,ws,quantity)
 
+        if ws.cell(row=ws.max_row-1,column=1).value == 'SERIAL NO':
+            ws.cell(row=ws.max_row,column=1,value=1)
+        else:
+            count_row = int(ws.cell(row=ws.max_row-1,column=1).value)
+            print("this is the serial number count",count_row)
+            if count_row >= 1:
+                    count = ws.cell(row=ws.max_row-1,column=1).value
+                    ws.cell(row=ws.max_row,column=1,value=count+1)
+            # else:
+            #     ws.cell(row=ws.max_row,column=1,value=count)
+                
         #         # Calculate total price and update in the target sheet
-        price_column = 'C'
-        result_column = 'E'
-        quan_column = 'D'
+        price_column = 'D'
+        result_column = 'F'
+        quan_column = 'E'
 
         #         # Ensure that the values are not None before converting to float
 
         quan_value = ws[quan_column + str(ws.max_row)].value
         print("this is quan value", quan_value)
         price = ws[price_column + str(ws.max_row)].value
+        print(price)
         price2 = format(price,'.2f')
         ws[price_column + str(ws.max_row)].value = price2
         price_value = ws[price_column + str(ws.max_row)].value
         print("this is price value", price_value)
+        
+        
+        
 
         if quan_value is not None and price_value is not None:
             ws[result_column + str(ws.max_row)] = float(price_value) * float(quan_value)

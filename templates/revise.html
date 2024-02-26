@@ -73,12 +73,18 @@
         <form action="/update" method="post">
             <div>
             <div class="part_desc"  id="description"></div>
+            <label for="part_no">Enter Serial Number to update:</label>
+            <input type="text"  id="slno" name="slno" placeholder="Enter Sl No...">
+
+            </div>
+            <br>
+            <div>
              <label for="part_no">Enter Part Number:</label>
-             <input type="text" style="margin-left:70px" id="part_no" name="part_no" placeholder="Enter Part Number..." value="{{ request.form['part_no'] }}" oninput="search()"  required>  
+             <input type="text" style="margin-left:83px" id="part_no" name="part_no" placeholder="Enter Part Number..." value="{{ request.form['part_no'] }}" oninput="search()" >  
              </div>
             <br>
             <label for="quantity">Enter Quantity</label>
-            <input type="text" style="margin-left:105px" id="quantity" name="quantity" placeholder="Enter Quantity...">
+            <input type="text" style="margin-left:117px" id="quantity" name="quantity" placeholder="Enter Quantity...">
             <button type="submit" name="btn" value="update">Update</button>
             <button type="submit" name="btn" value="addprod" formaction="/addrev">Add Product</button>
              <br>
@@ -87,8 +93,8 @@
         <br>
    
         <form action="/deleterev" method="post">
-            <label for="del_id">Enter Part Number to Delete:</label>
-            <input type="text" id="del_id" name="del_id" placeholder="Enter Part Number..." >
+            <label for="del_id">Enter Serial Number to Delete:</label>
+            <input type="text" id="del_id" name="del_id" placeholder="Enter Serial Number..." >
             <button type="submit" name="btn" value="delete">Delete!</button>
         </form>
         
