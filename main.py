@@ -63,21 +63,52 @@ def convert_to_words(num):
     return words.strip() 
 
 #--------------------------------------FUNCTION FOR CREATING A NEW QUOTE-----------------------------------------
+def get_next_letter(current_letter):
+    if current_letter == 'Z':
+        return 'A'
+    else:
+        return chr(ord(current_letter) + 1)
 
-def new_quote():
-    global file
-    print("inside creating quote function-------------------------------")
-    d = str(date.today())
-    today =  d.replace("-","")
-    print(today)
-    t = datetime.now()
-    time_str = str(t.strftime("%H:%M"))
-    time = time_str.replace(':','')
-    print(time)
-    f = today+time
-    n = 2
+def create_file():
+    current_date = date.today().strftime("%y%m%d")
+    
+    if not os.path.exists('last_state.txt'):
+        print("first")
+        with open('last_state.txt', 'w') as f:
+            print("second")
+            f.write(f"{current_date}_A")
+        print("still there")
+        first_file = f"{current_date}_A" +".xlsx"
+        wb = Workbook()
+        wb.save(first_file)
+        sheet1 = wb['Sheet']
+        sheet1.title = 'R'
+        wb.save(first_file)
+    
+        ws = wb.active
+        l = ['SERIAL NO','PART NUMBER', 'ITEMP DESCRIPTION', 'PRICE (USD)', 'QTY', 'TOTAL PRICE']
 
-    file = f[n:]+".xlsx"
+        for cell in range(1, 7):    
+            ws.cell(row=1, column=cell,value= l[cell-1])
+        wb.save(first_file)
+        return first_file
+    print("didnt go")
+    with open('last_state.txt', 'r') as f:
+        last_state = f.read().strip()
+
+    last_date, last_letter = last_state.split('_')
+    
+    if last_date == current_date:
+        next_letter = get_next_letter(last_letter)
+    else:
+        next_letter = 'A'
+    print("bye bye")
+    new_state = f"{current_date}_{next_letter}"
+
+    file = new_state + ".xlsx"
+    print("this is file from function", file)
+    with open('last_state.txt', 'w') as f:
+        f.write(new_state)
 
     wb = Workbook()
     wb.save(file)
@@ -93,8 +124,44 @@ def new_quote():
         ws.cell(row=1, column=cell,value= l[cell-1])
             
     wb.save(file)
-    print(file)
+    
     return file
+
+
+# def new_quote():
+#     global file
+#     print("inside creating quote function-------------------------------")
+#     # d = str(date.today())
+#     # today =  d.replace("-","")
+#     # print(today)
+#     # t = datetime.now()
+#     # time_str = str(t.strftime("%H:%M"))
+#     # time = time_str.replace(':','')
+#     # print(time)
+#     # f = today+time
+#     # n = 2
+
+#     # file = f[n:]+".xlsx"
+
+
+
+    
+#     wb = Workbook()
+#     wb.save(file)
+
+#     sheet1 = wb['Sheet']
+#     sheet1.title = 'R'
+#     wb.save(file)
+    
+#     ws = wb.active
+#     l = ['SERIAL NO','PART NUMBER', 'ITEMP DESCRIPTION', 'PRICE (USD)', 'QTY', 'TOTAL PRICE']
+
+#     for cell in range(1, 7):    
+#         ws.cell(row=1, column=cell,value= l[cell-1])
+            
+#     wb.save(file)
+#     print(file)
+#     return file
     
 
 
@@ -112,7 +179,7 @@ def revise():
     ws1 = wb.create_sheet()
     l = str(len(wb.sheetnames)-1)
     ws1.title = 'R'+l
-    filename = file[:10]
+    filename = file[:8]
     work = wb.sheetnames[-2]
     ws = wb[work]
     now = datetime.now() # current date and time
@@ -128,7 +195,7 @@ def revise():
     res = len(wb.sheetnames)
     
 
-    filename1 = filename+"-" +wb.sheetnames[-1]
+    filename1 = filename+"_" +wb.sheetnames[-1]
 
     return render_template('revise.html',filename=filename1,date=d,date_time=date_time, result_message=None, sheet=ws1)
 
@@ -222,7 +289,7 @@ def addrev():
         wb.save(filename1)
         result_message = f"Part details for ID {part_no} copied successfully."
 
-        filename1 = filename+"-" +wb.sheetnames[-1]
+        filename1 = filename+"_" +wb.sheetnames[-1]
 
         return render_template('revise.html',filename=filename1, result_message=None, sheet=ws,date_time=date_time, part_data = part_data,date= d)
     return render_template('revise.html',filename=filename1,  sheet=ws, part_data = part_data,date=d)
@@ -242,9 +309,9 @@ def cancelrev():
     wb.remove_sheet(sheetname)
     wb.save(file)
     # if len(wb.sheetnames) <=2:
-    #     filename = file[:10] + "-" + wb.sheetnames[-1]
+    #     filename = file[:8] + "-" + wb.sheetnames[-1]
     # else:
-    filename = file[:10] + "-" + wb.sheetnames[-1]
+    filename = file[:8] + "_" + wb.sheetnames[-1]
     return render_template('revise.html',filename=filename,date=d, date_time=date_time,result_message=None, sheet=ws)
 
 #-------------------------------UPDATE FOR REVISION------------------------------
@@ -325,11 +392,11 @@ def totalrev():
 def createquote():
     global file
     print("inside creating quote function-------------------------------")
-    file = new_quote()
+    file = create_file()
     wb = load_workbook(file)
     res= len(wb.sheetnames)
     ws = wb.worksheets[res-1]
-    filename = file[:10]
+    filename = file[:8]
     now = datetime.now() # current date and time
     date_time = now.strftime("%I:%M %p")
     print("THIS IS FILE NAME============================",file)
@@ -462,9 +529,9 @@ def add():
     global d
 
 
-    file = new_quote()
+    file = create_file()
     print(file)
-    filename = file[:10]
+    filename = file[:8]
 
     t = date.today()
                
@@ -575,7 +642,7 @@ def copy():
             result_message = f"Part details for ID {part_no} copied successfully."
         else:
             result_message = f"Part details for ID {part_no} not found."
-        filename = file[:10]
+        filename = file[:8]
 
         return render_template('index.html', result_message=None,date_time=date_time,filename=filename,date=d, sheet=ws)
     return render_template('index.html',filename=filename,date=d, sheet=ws)
