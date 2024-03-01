@@ -1,8 +1,10 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request ,redirect, url_for , send_file
 import openpyxl
 from openpyxl.styles import Font
 from openpyxl import load_workbook, Workbook
 from datetime import date,datetime
+from docxtpl import DocxTemplate
+from docx import Document
 
 import os
 
@@ -12,6 +14,68 @@ app = Flask(__name__)
 ws = None
 
 #  ------------FUNCTIONS FOR COPYING AND DELETING----------------------
+def fill_template(data):
+    template_path = 'template_quote.docx'
+    template = DocxTemplate(template_path)
+
+    # # Replace placeholders
+    table_rows = []
+
+    for data in data:
+        # Create a dictionary for each row
+        row_dict = {
+            'slno': data['slno'],
+            'part_no': data['part_no'],
+            'description': data['description'],
+            'qty': data['qty'],
+            'amount': data['amount'],
+            'total_price': data['total_price']
+        }
+        table_rows.append(row_dict)
+
+
+
+    offer = file[:14]
+    # Add the list of rows to the context
+    context = {'table_rows': table_rows,
+               'file' : offer,
+               'date' : d}
+
+    # Render the template
+    template.render(context)
+
+    # Save the filled document
+    output_path = 'filled_template.docx'
+    template.save(output_path)
+
+    return output_path
+
+
+@app.route('/generate', methods=['POST'])
+def generate():
+    wb = openpyxl.load_workbook(file)
+    res = len(wb.sheetnames)
+    ws = wb.worksheets[res-1]
+    document = Document()
+    
+    data_list = []
+    for row in range(2, ws.max_row + 1):  # Assuming data starts from row 2
+        data = {
+            'slno': ws.cell(row=row, column=1).value,
+            'part_no': ws.cell(row=row, column=2).value,
+            'description': ws.cell(row=row, column=3).value,
+            'qty': ws.cell(row=row, column=5).value,
+            'amount': ws.cell(row=row, column=4).value,
+            'total_price': ws.cell(row=row, column=6).value,
+        }
+        document.add_paragraph()
+        data_list.append(data)
+    
+
+    filled_doc_path = fill_template(data_list)
+
+    return send_file(filled_doc_path, as_attachment=True) 
+
 def copy_row(part_data,target_sheet, quantity):
 
     # source_row = source_sheet[row_number]
@@ -69,16 +133,15 @@ def get_next_letter(current_letter):
     else:
         return chr(ord(current_letter) + 1)
 
-def create_file():
+def create_file(user):
     current_date = date.today().strftime("%y%m%d")
     
     if not os.path.exists('last_state.txt'):
-        print("first")
         with open('last_state.txt', 'w') as f:
-            print("second")
+
             f.write(f"{current_date}_A")
-        print("still there")
-        first_file = f"{current_date}_A" +".xlsx"
+
+        first_file = f"{current_date}_A" +"_"+ user +".xlsx"
         wb = Workbook()
         wb.save(first_file)
         sheet1 = wb['Sheet']
@@ -92,21 +155,25 @@ def create_file():
             ws.cell(row=1, column=cell,value= l[cell-1])
         wb.save(first_file)
         return first_file
-    print("didnt go")
     with open('last_state.txt', 'r') as f:
         last_state = f.read().strip()
 
     last_date, last_letter = last_state.split('_')
     
-    if last_date == current_date:
-        next_letter = get_next_letter(last_letter)
-    else:
+    # if last_date == current_date and os.path.exists(f"{last_state}.txt"):
+    #     next_letter = last_letter
+    # else:
+    #     next_letter = get_next_letter(last_letter)
+    if last_date != current_date:
         next_letter = 'A'
-    print("bye bye")
+    elif os.path.exists(f"{last_state}.txt"):
+        next_letter = last_letter
+    else:
+        next_letter = get_next_letter(last_letter)
+
     new_state = f"{current_date}_{next_letter}"
 
-    file = new_state + ".xlsx"
-    print("this is file from function", file)
+    file = new_state+ "_" + user +".xlsx"
     with open('last_state.txt', 'w') as f:
         f.write(new_state)
 
@@ -179,7 +246,7 @@ def revise():
     ws1 = wb.create_sheet()
     l = str(len(wb.sheetnames)-1)
     ws1.title = 'R'+l
-    filename = file[:8]
+    filename = file[:14]
     work = wb.sheetnames[-2]
     ws = wb[work]
     now = datetime.now() # current date and time
@@ -309,9 +376,9 @@ def cancelrev():
     wb.remove_sheet(sheetname)
     wb.save(file)
     # if len(wb.sheetnames) <=2:
-    #     filename = file[:8] + "-" + wb.sheetnames[-1]
+    #     filename = file[:14]] + "-" + wb.sheetnames[-1]
     # else:
-    filename = file[:8] + "_" + wb.sheetnames[-1]
+    filename = file[:14] + "_" + wb.sheetnames[-1]
     return render_template('revise.html',filename=filename,date=d, date_time=date_time,result_message=None, sheet=ws)
 
 #-------------------------------UPDATE FOR REVISION------------------------------
@@ -324,11 +391,22 @@ def update():
     date_time = now.strftime("%I:%M %p")
 
     slno = request.form['slno']
+    print(slno)
     quant = request.form['quantity']
 
+    price_column = 'D'
+
+    price = float(ws[price_column + str(ws.max_row)].value)
+    print(price)
+    price2 = format(price,'.2f')
+    ws[price_column + str(ws.max_row)].value = price2
+    price_value = ws[price_column + str(ws.max_row)].value
+    totalp = float(quant)*float(price_value)
+    total_pr = format(totalp, '.2f')
     for cell in range(1,ws.max_row+1):
         if ws.cell(row=cell,column=1).value == int(slno):
             ws.cell(row=cell,column=5,value=quant)
+            ws.cell(row=cell,column=6,value=total_pr)
     wb.save(file)
     return render_template("revise.html",filename=filename1,date=d, date_time=date_time,result_message=None, sheet=ws)
 
@@ -338,18 +416,22 @@ def update():
 @app.route('/deleterev' , methods=['POST'])
 def deleterev():
     print("inside deleterev")
-    del_id = request.form['del_id']
-    print("delete id ====", del_id , type(del_id))
     now = datetime.now() # current date and time
     date_time = now.strftime("%I:%M %p")
+
     wb = openpyxl.load_workbook(file)
     res = len(wb.sheetnames)
     ws = wb.worksheets[res-1]
+    # if request.method == ['POST']:
+    part_no = request.form['slno']
+    print("delete id ====", part_no, type(part_no))
+        
+        
 
-    for row_number in range(2, ws.max_row +1):
+    for row_number in range(2, ws.max_row   +1):
         print("row number ======" ,row_number)
         print(type(ws.cell(row=row_number, column=1).value))
-        if ws.cell(row=row_number, column=1).value == int(del_id):
+        if ws.cell(row=row_number, column=1).value == int(part_no):
             del_row(ws, row_number)
             wb.save(file)
             break
@@ -392,11 +474,11 @@ def totalrev():
 def createquote():
     global file
     print("inside creating quote function-------------------------------")
-    file = create_file()
+    file = create_file(valid_username)
     wb = load_workbook(file)
     res= len(wb.sheetnames)
     ws = wb.worksheets[res-1]
-    filename = file[:8]
+    filename = file[:14]
     now = datetime.now() # current date and time
     date_time = now.strftime("%I:%M %p")
     print("THIS IS FILE NAME============================",file)
@@ -520,18 +602,41 @@ def cancel():
 
 
 #------------------------------------------ MAIN PAGE ROUTE -------------------------------------------------
-@app.route('/', methods=['GET', 'POST'])
 
-def add():
+valid_username = "admin"
+valid_password = "password"
+
+@app.route('/login', methods=['GET','POST'])
+
+def login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+
+        if username == valid_username and password == valid_password:
+            # If the credentials are valid, redirect to the home route
+            return redirect(url_for('home'))
+        else:
+            # If the credentials are invalid, you can render an error message or redirect to login again
+            error_message = "Invalid username or password"
+            return render_template('login.html', error_message=error_message)
+
+    return render_template('login.html', error_message=None)
+
+
+@app.route('/home', methods=['GET', 'POST'])
+
+def home():
     global ws 
     global file
     global filename
     global d
 
-
-    file = create_file()
+    file = create_file(valid_username)
     print(file)
-    filename = file[:8]
+
+    print(valid_username)
+    filename = file[:14]
 
     t = date.today()
                
@@ -540,8 +645,10 @@ def add():
     date_time = now.strftime("%I:%M %p")
     wb = openpyxl.load_workbook(file)
     ws = wb.active
-  
+
     if request.method == 'POST':
+        
+        
         part_no = request.form['part_no']
         quantity = request.form['quantity']
 
@@ -580,7 +687,7 @@ def copy():
         source_workbook = load_workbook("price2.xlsx", read_only=True)
         source_sheet = source_workbook.active
 
-   
+
         found_Part = False
 
         part_data = get_part_data(part_no)
@@ -642,7 +749,7 @@ def copy():
             result_message = f"Part details for ID {part_no} copied successfully."
         else:
             result_message = f"Part details for ID {part_no} not found."
-        filename = file[:8]
+        filename = file[:14]
 
         return render_template('index.html', result_message=None,date_time=date_time,filename=filename,date=d, sheet=ws)
     return render_template('index.html',filename=filename,date=d, sheet=ws)

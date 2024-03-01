@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Word Document Generator</title>
+</head>
+<body>
+    <h1>Fill in Word Document Template</h1>
+    <form method="post" action="/generate" enctype="multipart/form-data">
+        <label for="name">Name:</label>
+        <input type="text" name="name" required>
+        <br>
+        <label for="date">Date:</label>
+        <input type="text" name="date" required>
+        <br>
+        <label for="amount">Amount:</label>
+        <input type="text" name="amount" required>
+        <br>
+        <button type="submit">Generate Word Document</button>
+    </form>
+
+    {% if filled_template %}
+        <h2>Preview:</h2>
+        <div>{{ filled_template | safe }}</div>
+    {% endif %}
+</body>
+</html>

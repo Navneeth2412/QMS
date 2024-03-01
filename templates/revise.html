@@ -13,7 +13,7 @@
             font-family: arial, sans-serif;
             box-sizing: border-box;
         }
-        
+      
         .done{
            left: 12%;
            
@@ -73,8 +73,8 @@
         <form action="/update" method="post">
             <div>
             <div class="part_desc"  id="description"></div>
-            <label for="part_no">Enter Serial Number to update:</label>
-            <input type="text"  id="slno" name="slno" placeholder="Enter Sl No...">
+            <label for="part_no">Enter Serial Number:</label>
+            <input style="margin-left:70px"type="text"  id="slno" name="slno" placeholder="Enter Sl No...">
 
             </div>
             <br>
@@ -87,16 +87,13 @@
             <input type="text" style="margin-left:117px" id="quantity" name="quantity" placeholder="Enter Quantity...">
             <button type="submit" name="btn" value="update">Update</button>
             <button type="submit" name="btn" value="addprod" formaction="/addrev">Add Product</button>
+            <button type="submit" name="btn" value="delete" formaction="/deleterev">Delete!</button>
              <br>
             
         </form>
         <br>
    
-        <form action="/deleterev" method="post">
-            <label for="del_id">Enter Serial Number to Delete:</label>
-            <input type="text" id="del_id" name="del_id" placeholder="Enter Serial Number..." >
-            <button type="submit" name="btn" value="delete">Delete!</button>
-        </form>
+        
         
         <br>
         <form action="/totalrev" method="post">
