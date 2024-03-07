@@ -1,20 +1,128 @@
-from flask import Flask, render_template, request ,redirect, url_for , send_file
+from flask import Flask, render_template, request ,redirect, url_for , send_file , flash, session
 import openpyxl
 from openpyxl.styles import Font
 from openpyxl import load_workbook, Workbook
 from datetime import date,datetime
 from docxtpl import DocxTemplate
 from docx import Document
-
+from flask_wtf import FlaskForm
+from wtforms import StringField, PasswordField, SubmitField
+from wtforms.validators import DataRequired, Length, EqualTo
+from docx2pdf import convert
+import os
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+import smtplib 
 import os
 
 app = Flask(__name__)
-
+app.config['SECRET_KEY'] = os.urandom(24).hex()
 # Initialize ws as a global variable
 ws = None
 
+cust = None
+
+users = {'N0025': {'userid': 'N0025', 'password': 'ww',},}
+
+
+
+
+class LoginForm(FlaskForm):
+    userid = StringField('User ID', validators=[DataRequired()])
+    password = PasswordField('Password', validators=[DataRequired()])
+    submit = SubmitField('Login')
+
+class ResetPasswordForm(FlaskForm):
+    userid = StringField('User ID', validators=[DataRequired()])
+    submit = SubmitField('Reset Password')
+userid = ''
+@app.route('/', methods=['GET', 'POST'])
+def login():
+    global userid
+    print("inside login")
+    form = LoginForm()
+    if form.validate_on_submit():
+        print("submited login")
+        userid = form.userid.data
+        password = form.password.data
+        print(f"Attempting login with UserID: {userid}")
+        print("User ID:", userid)
+        print("Password:", password)
+        print("Users Dictionary:", users)
+        # Check if user exists and password is correct (replace with database check)
+        if userid in users and users[userid]['password'] == password:
+            flash('', 'success')
+            session['user'] = userid 
+            return redirect(url_for('home'))
+        else:
+            flash('Invalid user id or password. Please try again.', 'danger')
+    else:
+        print(form.errors)
+    return render_template('login.html', form=form)
+
+@app.route('/logout', methods=['GET', 'POST'])
+def logout():
+    # Clear the user session
+    session.pop('user', None)
+    flash('', 'success')
+    # Redirect to the login page
+    return redirect(url_for('login'))
+
+@app.route('/reset_password', methods=['GET', 'POST'])
+def reset_password():
+    form = ResetPasswordForm()
+    if form.validate_on_submit():
+        userid = form.userid.data
+
+        # Check if user exists (replace with database check)
+        if userid in users:
+            # Generate a random password reset token (consider using a secure library)
+            # Placeholder for generation, replace with a secure method (e.g., using secrets module)
+            reset_token = os.urandom
+
+            # Send a password reset email to the user's email address
+            send_reset_email(users[userid]['email'], reset_token)
+
+            flash('A password reset link has been sent to your email address.', 'success')
+            return redirect(url_for('login'))
+        else:
+            flash('User not found. Please enter a valid user ID.', 'danger')
+
+    return render_template('reset_password.html', form=form)
+
+
+
+# def send_reset_email(email, reset_token):
+#     # Replace with your actual email server configuration and ensure secure practices like TLS/SSL
+#     # Consider using a secure library like Flask-Mail for email functionality
+
+#     msg = MIMEMultipart()
+#     msg['From'] = 'QMS Woodward'
+#     msg['To'] = email
+#     msg['Subject'] = 'Password Reset Request'
+
+#     body = f'You have requested a password reset for your account. Please click the following link to reset your password:\n' \
+#            f'{url_for("reset_password_with_token", reset_token=reset_token, _external=True)}'
+
+#     msg.attach(MIMEText(body, 'plain'))
+
+#     # Use a secure connection and port (e.g., 465 with SSL)
+#     server = smtplib.SMTP_SSL('smtp.example.com', 465)
+#     server.login('navneethpras@gmail.com', 'ugzk xyzd nhgx polo')
+#     server.sendmail(msg['From'], msg['To'], msg.as_string())
+#     server.quit()
+
+
+
+
 #  ------------FUNCTIONS FOR COPYING AND DELETING----------------------
-def fill_template(data):
+global cust_ref
+global pno
+global pname
+
+def fill_template(data,offer,rev_name):
+    
     template_path = 'template_quote.docx'
     template = DocxTemplate(template_path)
 
@@ -33,48 +141,228 @@ def fill_template(data):
         }
         table_rows.append(row_dict)
 
+    cust_row = []
+    for offer in offer:
+        cust_dict = {
+            'custref':offer['custref'],
+            'pno' : offer['pno'],
+            'pname' : offer['pname'],
+            'subject':offer['subject'],
+            'inco':offer['inco'],
+            'remark':offer['remark'],
+            'total':offer['total'],
+            'name':offer['name'],
+            'phno':offer['phno'],
+            'email':offer['email'],
+            'cust_name' : offer['cust_name'],
+            'cust_addr1' : offer['cust_addr1'],
+            'cust_addr2' : offer['cust_addr2'],
+            'cust_addr3' : offer['cust_addr3'],
+            'cust_addr4' : offer['cust_addr4'],
+            'city' : offer['city'],
+            'cust_zip' : offer['cust_zip'],
+            'country' : offer['country'],
+            'contact_name' : offer['contact_name'],
+            'designation' : offer['designation'],
+            'cust_email' : offer['cust_email'],
+            'cust_no' : offer['cust_no'],
+            'cust_phno': offer['cust_phno'],
+            'words': offer['words']
+        }
+    
+    cust_row.append(cust_dict)
+    print('this is cust_dict', cust_dict)
+    print('this is cust_row', cust_row)
 
 
-    offer = file[:14]
+    print(table_rows)
+    
+    offerno = rev_name
     # Add the list of rows to the context
     context = {'table_rows': table_rows,
-               'file' : offer,
-               'date' : d}
+               'file' : offerno,
+               'date' : d,
+               'cust_row':cust_row,
+               }
+    
 
+    
     # Render the template
     template.render(context)
-
     # Save the filled document
-    output_path = 'filled_template.docx'
+    output = rev_name
+    output_path = output + '.docx'
     template.save(output_path)
 
     return output_path
 
+@app.route('/generatepdf', methods=['POST'])
+def generatepdf():
+    if request.method=='POST':
+        print("inside pdf")
+        print(file)
+        docx = file[:14] +'.docx'
+        try:
+            pdf_file = convert(docx)
+            if pdf_file is not None:
+                print("after convert")
+                new_file = file[:14] + '.pdf'
+                return send_file(pdf_file, as_attachment=True, mimetype='application/pdf', download_name=new_file)
+            else:
+                result_message = "Error generating PDF"
+        except Exception as e:
+            result_message = f"Error: {str(e)}"
+
+        return render_template('index.html', filename=filename, date=d, date_time=d, result_message=result_message, sheet=ws)
+
+    return render_template('index.html', filename=filename, date=d, date_time=d, result_message=None, sheet=ws)
+
+
 
 @app.route('/generate', methods=['POST'])
 def generate():
+    print("filename:---------",filename)
+    file = filename+'.xlsx'.strip()
+    print("file:", file)
     wb = openpyxl.load_workbook(file)
     res = len(wb.sheetnames)
+    if res >1:
+        rev_name = file[:14] + '_' + 'R' + str(res-1)
+    else:
+        rev_name = file[:14]
     ws = wb.worksheets[res-1]
+
+
+    saleswb = openpyxl.load_workbook('sales_emp.xlsx')
+    salesws = saleswb.active
+
+    custwb = openpyxl.load_workbook('QMS_Customer_Data_Sheet.xlsx',data_only=True)
+    custws = custwb.active
+    
     document = Document()
-    
-    data_list = []
-    for row in range(2, ws.max_row + 1):  # Assuming data starts from row 2
-        data = {
-            'slno': ws.cell(row=row, column=1).value,
-            'part_no': ws.cell(row=row, column=2).value,
-            'description': ws.cell(row=row, column=3).value,
-            'qty': ws.cell(row=row, column=5).value,
-            'amount': ws.cell(row=row, column=4).value,
-            'total_price': ws.cell(row=row, column=6).value,
+    if request.method == 'POST':
+        off_list = []
+        print("inside generate function")
+        cust_ref = request.form['cust_ref']
+        pno = request.form['p_no']
+        pname = request.form['p_name']
+        subject = request.form['subject']
+        inco = request.form['inco']
+        remark = request.form['remark']
+        contact = request.form['contact']
+        name =''
+        phno = ''
+        email = ''
+        cust_name = ''
+        cust_addr1 = ''
+        cust_addr2 = ''
+        cust_addr3 = ''
+        cust_addr4 = ''
+        city = ''
+        cust_zip = ''
+        country = ''
+        contact_name = ''
+        designation = ''
+        cust_email = ''
+        cust_no = ''
+        cust_phno = ''
+
+        print(custws.cell(row=4,column=1).value, type(custws.cell(row=4,column=1).value))
+        print(userid, type(userid))
+        for row in range(1, custws.max_row+1):
+            if custws.cell(row=row,column=1).value == userid:
+                print("inside customer loop")
+                cust_name = custws.cell(row=row,column=3).value
+                cust_addr1 = custws.cell(row=row,column=4).value
+                cust_addr2 = custws.cell(row=row,column=5).value
+                cust_addr3 = custws.cell(row=row,column=6).value
+                cust_addr4 = custws.cell(row=row,column=7).value
+                city = custws.cell(row=row,column=8).value
+                cust_zip = custws.cell(row=row,column=9).value
+                country = custws.cell(row=row,column=10).value
+                contact_name = custws.cell(row=row,column=14).value
+                designation = custws.cell(row=row,column=15).value
+                cust_email = custws.cell(row=row,column=13).value
+                cust_no = custws.cell(row=row,column=2).value
+                cust_phno = custws.cell(row=row,column=12).value
+
+
+
+
+        for row in range(1, salesws.max_row+1):
+
+            if salesws.cell(row=row,column=1).value == contact:
+
+                name = salesws.cell(row=row,column=1).value
+                phno = salesws.cell(row=row,column=3).value
+                email = salesws.cell(row=row,column=2).value
+                break
+       
+        
+
+       
+        
+        data_list = []
+        total = 0
+        for row in range(2, ws.max_row + 1):  # Assuming data starts from row 2
+            total += float(ws.cell(row=row,column=6).value)
+            data = {
+                'slno': ws.cell(row=row, column=1).value,
+                'part_no': ws.cell(row=row, column=2).value,
+                'description': ws.cell(row=row, column=3).value,
+                'qty': ws.cell(row=row, column=5).value,
+                'amount': ws.cell(row=row, column=4).value,
+                'total_price': ws.cell(row=row, column=6).value,
+            }    
+            document.add_paragraph()
+
+            data_list.append(data)
+        words = convert_to_words(int(total))
+        
+        print(data_list)
+        print(total)
+
+        offer = {
+            'custref':cust_ref,
+            'pno':pno,
+            'pname':pname,
+            'subject':subject,
+            'inco':inco,
+            'remark':remark,
+            'total':total,
+            'name':name,
+            'phno':phno,
+            'email':email,
+            'cust_name' : cust_name,
+            'cust_addr1' : cust_addr1,
+            'cust_addr2' : cust_addr2,
+            'cust_addr3' : cust_addr3,
+            'cust_addr4' : cust_addr4,
+            'city' : city,
+            'cust_zip' : cust_zip,
+            'country' : country,
+            'contact_name' : contact_name,
+            'designation' : designation,
+            'cust_email' : cust_email,
+            'cust_no' : cust_no,
+            'cust_phno': cust_phno,
+            'words': words
+
         }
-        document.add_paragraph()
-        data_list.append(data)
-    
+        off_list.append(offer)
+        # offer = []
+        # offer.append(cust_ref)
 
-    filled_doc_path = fill_template(data_list)
+        filled_doc_path = fill_template(data_list,off_list,rev_name)
 
-    return send_file(filled_doc_path, as_attachment=True) 
+        return send_file(filled_doc_path, as_attachment=True) 
+    excel_files = get_excel_files()
+    return render_template('index.html',filename=filename,date=d, date_time=d,result_message=None, sheet=ws,excel_files=excel_files)
+
+
+
+
+
 
 def copy_row(part_data,target_sheet, quantity):
 
@@ -133,15 +421,26 @@ def get_next_letter(current_letter):
     else:
         return chr(ord(current_letter) + 1)
 
+def find_next_available_letter(current_date, current_letter):
+    while os.path.exists(f"{current_date}_{current_letter}_{userid}.xlsx"):
+        current_letter = get_next_letter(current_letter)
+    return current_letter
+
+
+
+
+
+
+
 def create_file(user):
     current_date = date.today().strftime("%y%m%d")
     
     if not os.path.exists('last_state.txt'):
         with open('last_state.txt', 'w') as f:
-
             f.write(f"{current_date}_A")
 
-        first_file = f"{current_date}_A" +"_"+ user +".xlsx"
+        first_file = f"{current_date}_A_{user}.xlsx"
+
         wb = Workbook()
         wb.save(first_file)
         sheet1 = wb['Sheet']
@@ -149,31 +448,27 @@ def create_file(user):
         wb.save(first_file)
     
         ws = wb.active
-        l = ['SERIAL NO','PART NUMBER', 'ITEMP DESCRIPTION', 'PRICE (USD)', 'QTY', 'TOTAL PRICE']
+        headers = ['SERIAL NO', 'PART NUMBER', 'ITEM DESCRIPTION', 'UNIT PRICE', 'QTY', 'TOTAL PRICE']
 
-        for cell in range(1, 7):    
-            ws.cell(row=1, column=cell,value= l[cell-1])
+        for cell, header in enumerate(headers, start=1):    
+            ws.cell(row=1, column=cell, value=header)
         wb.save(first_file)
         return first_file
+    
     with open('last_state.txt', 'r') as f:
         last_state = f.read().strip()
 
     last_date, last_letter = last_state.split('_')
     
-    # if last_date == current_date and os.path.exists(f"{last_state}.txt"):
-    #     next_letter = last_letter
-    # else:
-    #     next_letter = get_next_letter(last_letter)
     if last_date != current_date:
         next_letter = 'A'
-    elif os.path.exists(f"{last_state}.txt"):
-        next_letter = last_letter
     else:
-        next_letter = get_next_letter(last_letter)
+        next_letter = find_next_available_letter(current_date, last_letter)
 
     new_state = f"{current_date}_{next_letter}"
 
-    file = new_state+ "_" + user +".xlsx"
+    file = f"{new_state}_{user}.xlsx"
+
     with open('last_state.txt', 'w') as f:
         f.write(new_state)
 
@@ -185,86 +480,89 @@ def create_file(user):
     wb.save(file)
     
     ws = wb.active
-    l = ['SERIAL NO','PART NUMBER', 'ITEMP DESCRIPTION', 'PRICE (USD)', 'QTY', 'TOTAL PRICE']
+    headers = ['SERIAL NO', 'PART NUMBER', 'ITEM DESCRIPTION', 'UNIT PRICE', 'QTY', 'TOTAL PRICE']
 
-    for cell in range(1, 7):    
-        ws.cell(row=1, column=cell,value= l[cell-1])
+    for cell, header in enumerate(headers, start=1):    
+        ws.cell(row=1, column=cell, value=header)
             
     wb.save(file)
     
     return file
 
-
-# def new_quote():
-#     global file
-#     print("inside creating quote function-------------------------------")
-#     # d = str(date.today())
-#     # today =  d.replace("-","")
-#     # print(today)
-#     # t = datetime.now()
-#     # time_str = str(t.strftime("%H:%M"))
-#     # time = time_str.replace(':','')
-#     # print(time)
-#     # f = today+time
-#     # n = 2
-
-#     # file = f[n:]+".xlsx"
-
-
-
-    
-#     wb = Workbook()
-#     wb.save(file)
-
-#     sheet1 = wb['Sheet']
-#     sheet1.title = 'R'
-#     wb.save(file)
-    
-#     ws = wb.active
-#     l = ['SERIAL NO','PART NUMBER', 'ITEMP DESCRIPTION', 'PRICE (USD)', 'QTY', 'TOTAL PRICE']
-
-#     for cell in range(1, 7):    
-#         ws.cell(row=1, column=cell,value= l[cell-1])
-            
-#     wb.save(file)
-#     print(file)
-#     return file
-    
+# 
 
 
 #-----------------------------ALL APP ROUTES---------------------------------
 
 #------------------------------REVISE APP ROUTE------------------------------ ----------- ---------- ------------ --------- REVISE PAGE ROUTES ------------ ------------- ---------
-@app.route('/revise', methods=['POST'])
-def revise():
-    global file
+
+@app.route('/revise/<file_name>', methods=['GET'])
+def revise(file_name):
     global filename
     global filename1
-    f = request.form['file']
-    file = f+".xlsx"
-    wb = openpyxl.load_workbook(file)
-    ws1 = wb.create_sheet()
-    l = str(len(wb.sheetnames)-1)
-    ws1.title = 'R'+l
-    filename = file[:14]
-    work = wb.sheetnames[-2]
-    ws = wb[work]
-    now = datetime.now() # current date and time
+    now = datetime.now()  # current date and time
     date_time = now.strftime("%I:%M %p")
     print("inside revise function")
-    for row in range(1,ws.max_row+1):
-        for cell in range(1,ws.max_column+1):
-            value = ws.cell(row=row,column=cell).value
+
+    try:
+        file = file_name
+        wb = openpyxl.load_workbook(file)
+        ws1 = wb.create_sheet()
+        l = str(len(wb.sheetnames) - 1)
+        ws1.title = 'R' + l
+        filename = file[:14]
+        work = wb.sheetnames[-2]
+        ws = wb[work]
+
+        for row in range(1, ws.max_row + 1):
+            for cell in range(1, ws.max_column + 1):
+                value = ws.cell(row=row, column=cell).value
+                ws1.cell(row=row, column=cell, value=value)
+
+        wb.save(file)
+
+        res = len(wb.sheetnames)
+        filename1 = filename + "_" + wb.sheetnames[-1]
+        excel_files = get_excel_files()
+        return render_template('revise.html', filename=filename1, date=d, date_time=date_time,result_message=None, sheet=ws1,excel_files=excel_files)
+    except Exception as e:
+        result_message = f"Error revising file: {str(e)}"
+        return render_template('revise.html', filename=filename1, date=d, date_time=date_time,result_message=result_message, sheet=None,excel_files=excel_files)
+
+
+
+
+
+# @app.route('/revise', methods=['POST'])
+# def revise():
+#     global file
+#     global filename
+#     global filename1
+#     f = request.form['file']
+#     file = f+".xlsx"
+#     wb = openpyxl.load_workbook(file)
+#     ws1 = wb.create_sheet()
+#     l = str(len(wb.sheetnames)-1)
+#     ws1.title = 'R'+l
+#     filename = file[:14]
+#     work = wb.sheetnames[-2]
+#     ws = wb[work]
+#     now = datetime.now() # current date and time
+#     date_time = now.strftime("%I:%M %p")
+#     print("inside revise function")
+#     for row in range(1,ws.max_row+1):
+#         for cell in range(1,ws.max_column+1):
+#             value = ws.cell(row=row,column=cell).value
            
-            ws1.cell(row=row, column=cell,value=value)
-    wb.save(file)
+#             ws1.cell(row=row, column=cell,value=value)
+#     wb.save(file)
   
-    res = len(wb.sheetnames)
+#     res = len(wb.sheetnames)
     
 
-    filename1 = filename+"_" +wb.sheetnames[-1]
+#     filename1 = filename+"_" +wb.sheetnames[-1]
 
-    return render_template('revise.html',filename=filename1,date=d,date_time=date_time, result_message=None, sheet=ws1)
+#     return render_template('revise.html',filename=filename1,date=d,date_time=date_time, result_message=None, sheet=ws1)
 
 #------------------------------SHOW TABLE TO REVISE---------------------------
 
@@ -276,7 +574,8 @@ def indexrev():
         res = len(wb.sheetnames)
         print(res)
         ws = wb.worksheets[res-1]
-    return render_template("revise.html",filename=filename,date=d, sheet=ws)
+        excel_files = get_excel_files()
+    return render_template("revise.html",filename=filename,date=d, sheet=ws,excel_files=excel_files)
 
 
 #-------------------------------ADD PRODUCT FOR REVISE---------------------------
@@ -357,8 +656,8 @@ def addrev():
         result_message = f"Part details for ID {part_no} copied successfully."
 
         filename1 = filename+"_" +wb.sheetnames[-1]
-
-        return render_template('revise.html',filename=filename1, result_message=None, sheet=ws,date_time=date_time, part_data = part_data,date= d)
+        excel_files = get_excel_files()
+        return render_template('revise.html',filename=filename1, result_message=None, sheet=ws,date_time=date_time, part_data = part_data,date= d,excel_files=excel_files)
     return render_template('revise.html',filename=filename1,  sheet=ws, part_data = part_data,date=d)
 
 #------------------------------CANCEL FOR REVISION------------------------------
@@ -379,7 +678,8 @@ def cancelrev():
     #     filename = file[:14]] + "-" + wb.sheetnames[-1]
     # else:
     filename = file[:14] + "_" + wb.sheetnames[-1]
-    return render_template('revise.html',filename=filename,date=d, date_time=date_time,result_message=None, sheet=ws)
+    excel_files = get_excel_files()
+    return render_template('revise.html',filename=filename,date=d, date_time=date_time,result_message=None, sheet=ws,excel_files=excel_files)
 
 #-------------------------------UPDATE FOR REVISION------------------------------
 @app.route('/update', methods=['POST'])
@@ -408,7 +708,8 @@ def update():
             ws.cell(row=cell,column=5,value=quant)
             ws.cell(row=cell,column=6,value=total_pr)
     wb.save(file)
-    return render_template("revise.html",filename=filename1,date=d, date_time=date_time,result_message=None, sheet=ws)
+    excel_files = get_excel_files()
+    return render_template("revise.html",filename=filename1,date=d, date_time=date_time,result_message=None, sheet=ws,excel_files=excel_files)
 
 
 #---------------------------------DELETE FOR REVISON------------------------------
@@ -435,7 +736,8 @@ def deleterev():
             del_row(ws, row_number)
             wb.save(file)
             break
-    return render_template('revise.html', date=d,filename = filename1,date_time=date_time,result_message=None,sheet=ws)
+    excel_files = get_excel_files()
+    return render_template('revise.html', date=d,filename = filename1,date_time=date_time,result_message=None,sheet=ws,excel_files=excel_files)
 
 
 #------------------------------TOTAL FOR REVISION-----------------------------------
@@ -463,8 +765,8 @@ def totalrev():
         
     ws.cell(row=ws.max_row,column=3, value="TOTAL PRICE")
 
-    
-    return render_template('revise.html',filename=filename1,date_time=date_time,date=d, sheet=ws)
+    excel_files = get_excel_files()
+    return render_template('revise.html',filename=filename1,date_time=date_time,date=d, sheet=ws,excel_files=excel_files)
 
 
 
@@ -474,7 +776,7 @@ def totalrev():
 def createquote():
     global file
     print("inside creating quote function-------------------------------")
-    file = create_file(valid_username)
+    file = create_file(userid)
     wb = load_workbook(file)
     res= len(wb.sheetnames)
     ws = wb.worksheets[res-1]
@@ -482,7 +784,8 @@ def createquote():
     now = datetime.now() # current date and time
     date_time = now.strftime("%I:%M %p")
     print("THIS IS FILE NAME============================",file)
-    return render_template("add.html", result_message=None,date=d,date_time=date_time, filename= filename,sheet=ws)
+    excel_files = get_excel_files()
+    return render_template("add.html", result_message=None,date=d,date_time=date_time, filename= filename,sheet=ws,excel_files=excel_files)
 
 #---------------------------------ADD NEW PRODUCT FOR QUOTE--------------------------
 
@@ -519,47 +822,78 @@ def delete():
     now = datetime.now() # current date and time
     date_time = now.strftime("%I:%M %p")
     if request.method == 'POST':
+        print('inside del func')
         del_id = request.form['del_id']
-
+        print(del_id)
         wb = openpyxl.load_workbook(file)
         ws = wb.active
-        
-
+        print(file)
+        print(ws.cell(row=2, column=1).value , type(ws.cell(row=2, column=1).value))
+        print(type(del_id))
         for row_number in range(2, ws.max_row + 1):
-            if ws.cell(row=row_number, column=1).value == del_id:
+            if ws.cell(row=row_number, column=2).value == del_id:
                 del_row(ws, row_number)
+                print('deleted')
                 wb.save(file)
                 break
-        return render_template('index.html',filename=filename,date=d, date_time=date_time,result_message=None,sheet=ws)
+        excel_files = get_excel_files()
+        return render_template('index.html',filename=filename,date=d, date_time=date_time,result_message=None,sheet=ws,excel_files=excel_files)
     
 
 #----------------------------VIEWING QUOTE-----------------------------------
-@app.route('/view', methods=['POST'])
-def view():
+    
+@app.route('/view/<file_name>', methods=['GET'])
+def view(file_name):
     global ws  # Use the global ws variable
     global filename
     now = datetime.now() # current date and time
     date_time = now.strftime("%I:%M %p")
     print("in view")
-    print(filename)
-    if request.method == 'POST':
-        res = 1
-        try:
-            f = request.form['file']
-            file = f+'.xlsx'
-            wb = load_workbook(file)
-            res = len(wb.sheetnames)
-            ws = wb.worksheets[res-1]
-            if res==1:
-                filename1 = filename
-            else:
-                filename1 = filename+"-" +wb.sheetnames[-1]
-        except:
-            result_message = "No File Found"
-            return render_template("index.html",result_message=result_message,date_time=date_time,filename=filename,date=d, sheet=ws)
-        print("this is file", file)
+    print(file_name)
+    
+    try:
+        file = file_name
+        wb = load_workbook(file)
+        res = len(wb.sheetnames)
+        ws = wb.worksheets[res-1]
+        if res == 1:
+            filename1 = filename
+        else:
+            filename1 = filename + "-" + wb.sheetnames[-1]
+    except Exception as e:
+        result_message = "No File Found: " + str(e)
+        return render_template("index.html", result_message=result_message, date_time=date_time, filename=filename, date=d, sheet=ws)
+    excel_files = get_excel_files()
+    return render_template("view.html", filename=filename1, date=d, date_time=date_time, sheet=ws,excel_files=excel_files)
 
-    return render_template("view.html",filename=filename1,date=d,date_time=date_time, sheet=ws)
+
+
+# @app.route('/view', methods=['POST'])
+# def view():
+#     global ws  # Use the global ws variable
+#     global filename
+#     now = datetime.now() # current date and time
+#     date_time = now.strftime("%I:%M %p")
+#     print("in view")
+#     print(filename)
+#     if request.method == 'POST':
+#         res = 1
+#         try:
+#             f = request.form['file']
+#             file = f+'.xlsx'
+#             wb = load_workbook(file)
+#             res = len(wb.sheetnames)
+#             ws = wb.worksheets[res-1]
+#             if res==1:
+#                 filename1 = filename
+#             else:
+#                 filename1 = filename+"-" +wb.sheetnames[-1]
+#         except:
+#             result_message = "No File Found"
+#             return render_template("index.html",result_message=result_message,date_time=date_time,filename=filename,date=d, sheet=ws)
+#         print("this is file", file)
+
+#     return render_template("view.html",filename=filename1,date=d,date_time=date_time, sheet=ws)
 
 
 #-------------------------------ADDING NEW PRODUCT---------------------------------
@@ -597,31 +931,16 @@ def cancel():
     date_time = now.strftime("%I:%M %p")
     print(file)
     os.remove(file)
-    return render_template('index.html',filename=filename,date_time=date_time,date=d, sheet=ws)
+    excel_files = get_excel_files()
+    return render_template('index.html',filename=filename,date_time=date_time,date=d, sheet=ws,excel_files=excel_files)
 
 
 
 #------------------------------------------ MAIN PAGE ROUTE -------------------------------------------------
 
-valid_username = "admin"
-valid_password = "password"
 
-@app.route('/login', methods=['GET','POST'])
 
-def login():
-    if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
 
-        if username == valid_username and password == valid_password:
-            # If the credentials are valid, redirect to the home route
-            return redirect(url_for('home'))
-        else:
-            # If the credentials are invalid, you can render an error message or redirect to login again
-            error_message = "Invalid username or password"
-            return render_template('login.html', error_message=error_message)
-
-    return render_template('login.html', error_message=None)
 
 
 @app.route('/home', methods=['GET', 'POST'])
@@ -631,37 +950,70 @@ def home():
     global file
     global filename
     global d
+    global cust_ref
+    global pno
+    global pname
 
-    file = create_file(valid_username)
-    print(file)
+    user = session.get('user')
 
-    print(valid_username)
-    filename = file[:14]
+    # Check if a user is logged in
+    if user:
+        # Dummy dashboard route (replace with actual dashboard logic)
 
-    t = date.today()
-               
-    d= t.strftime("%d-%m-%Y")
-    now = datetime.now() # current date and time
-    date_time = now.strftime("%I:%M %p")
-    wb = openpyxl.load_workbook(file)
-    ws = wb.active
+        cust  = openpyxl.load_workbook("QMS_Customer_Data_Sheet.xlsx",data_only=True)
+        custws = cust.active
 
-    if request.method == 'POST':
-        
-        
-        part_no = request.form['part_no']
-        quantity = request.form['quantity']
+        file = create_file(user)
+        print(file)
+        cust_detail = []
+        print(custws.cell(row=2,column=1).value,type(custws.cell(row=2,column=1).value))
+        print(userid,type(userid))
+        for row in range(1, custws.max_row+1):
+            if custws.cell(row=row,column=1).value == userid:
+                print("inside customer loop")
+                for col in range(3,15):
 
-        part_data = get_part_data(part_no)
+                    cust_detail.append(custws.cell(row=row,column=col).value)
+                break
+        cust_detail = [item for item in cust_detail if item.strip()]
+        print("this is customer detail", cust_detail)
+
+        filename = file[:14]
+
+        t = date.today()
+                
+        d= t.strftime("%d-%m-%Y")
+        now = datetime.now() # current date and time
+        date_time = now.strftime("%I:%M %p")
+        wb = openpyxl.load_workbook(file)
+        ws = wb.active
+
+        if request.method == 'POST':
+            part_no = request.form['part_no']
+            quantity = request.form['quantity']
+
+            
+
+            part_data = get_part_data(part_no)
 
 
-        # Load the source workbook           mmmmv,v.                  
-        source_workbook = load_workbook("price2.xlsx", read_only=True)
-        source_sheet = source_workbook.active
+            # Load the source workbook           mmmmv,v.                  
+            source_workbook = load_workbook("price2.xlsx", read_only=True)
+            source_sheet = source_workbook.active
 
-        return render_template('index.html', result_message=None, date=d,filename=filename, sheet=ws,date_time=date_time, part_data=part_data)
-    return render_template('index.html',filename=filename,date=d,date_time=date_time, sheet=ws)
+            return render_template('index.html', result_message=None, date=d,filename=filename, sheet=ws,date_time=date_time, part_data=part_data)
+    else:
+        # Redirect to login if no user is logged in
+        return redirect(url_for('login'))
+    excel_files = get_excel_files()
+    return render_template('index.html',filename=filename,date=d,date_time=date_time, sheet=ws,excel_files=excel_files,cust_detail=cust_detail)
 
+
+
+def get_excel_files():
+    current_folder = os.path.dirname(os.path.abspath(__file__))
+    excel_files = [file for file in os.listdir(current_folder) if file.endswith('.xlsx') and userid in file]
+    return excel_files
 
 #---------------------COPY DATA------------------------------------------------------------------
 
@@ -750,8 +1102,8 @@ def copy():
         else:
             result_message = f"Part details for ID {part_no} not found."
         filename = file[:14]
-
-        return render_template('index.html', result_message=None,date_time=date_time,filename=filename,date=d, sheet=ws)
+        excel_files = get_excel_files()
+        return render_template('index.html', result_message=None,date_time=date_time,filename=filename,date=d, sheet=ws,excel_files=excel_files)
     return render_template('index.html',filename=filename,date=d, sheet=ws)
 
 #----------------------------------GETTING TOTAL PRICE-------------------------------
@@ -785,9 +1137,9 @@ def total():
     
     ws.cell(row=ws.max_row,column=3,value=words)
     ws.cell(row=ws.max_row,column=2, value="TOTAL PRICE")
-
+    excel_files = get_excel_files()
     
-    return render_template('index.html',filename=filename,date=d,date_time=date_time, sheet=ws)
+    return render_template('index.html',filename=filename,date=d,date_time=date_time, sheet=ws,excel_files=excel_files)
 
 #------------------------------SHOWS TABLE-----------------------------------------
 
@@ -800,10 +1152,11 @@ def index():
         wb = load_workbook(file)
         res = len(wb.sheetnames)
         ws = wb.worksheets[res-1]
-    
-    return render_template("index.html",filename=filename,date_time=date_time,date=d, sheet=ws)
+    excel_files = get_excel_files()
+    return render_template("index.html",filename=filename,date_time=date_time,date=d, sheet=ws,excel_files=excel_files)
 
 
 #----------MAIN----------
 if __name__ == '__main__':
     app.run(debug=True)
+

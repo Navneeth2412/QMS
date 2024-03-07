@@ -7,62 +7,220 @@
      <title>Quoatation</title>
      <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
      <style>
+body, html {
+    margin: 0;
+    padding: 0;
+}
+.dropdown {
+    display: inline-block;
+}
 
-        h1 {text-align: center;}
-        .quotation-section {text-align: left;
-        padding-left: 150px;}
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #6c7881;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+}
+
+.dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+.dropdown-content a:hover {
+    background-color: #f1f1f1;
+
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+.dropbtn {
+    background-color: #6c7881;
+    color: white;
+    padding: 14px 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.dropbtn:hover {
+    background-color: #095d95;
+}
+
+    .generate {
+        background-color: #6c7881;
+        color: white;
+        padding: 14px 16px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        position: absolute;
+        right: 120px;
+        top: 100px;
+
+    }
+
+    .generate:hover {
+        background-color: #095d95;
+    }
+    .generate-pdf {
+        background-color: #6c7881;
+        color: white;
+        padding: 14px 16px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        position: absolute;
+        right: 10px;
+        top: 100px;
+
+    }
+
+    .generate-pdf:hover {
+        background-color: #860100;
+    }
+.navbar {
+            background-color: #6c7881;
+            overflow: hidden;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+        }
+
+        .navbar .right-buttons {
+            display: flex;
+        }
+
+        .navbar button, .navbar a {
+            background: none;
+            border: none;
+            color: #ffffff;
+            text-decoration: none;
+            font-size: 16px;
+            cursor: pointer;
+            padding: 14px 16px;
+            display: block;
+            margin-left: 10px;
+            transition: background-color 0.3s; /* Added transition for smooth hover effect */
+        }
+
+        .navbar button:hover, .navbar a:hover {
+            background-color: #860100;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        h2 {text-align: center;
+        font-size: x-large;}
+        .quotation-section {
+            text-align: left;
+        padding-left: 200px;
+        margin-top: 20px;
+    }
          * {
              font-family: arial, sans-serif;
              box-sizing: border-box;
          }
-        
-         .revise{
-            right: 24.5%;
-            
-            position: absolute;
-            transform: translateX(-25%);
-         }
-         .revisetxt{
-            right: 12%;
-            
-            position: absolute;
-            transform: translateX(-25%);
-         }
+        body{
+            background-color: #f4f4f4;
+        }
+         .revise-container {
+        display: flex; /* Create a flex container */
+        align-items: center; /* Align button and input vertically */
+        top:55%;
+        position: absolute; /* Fix the container to the viewport */
+        right: 15%; /* Set right margin for the container */
+        transform: translateX(-25%); /* Center the container horizontally */
+        }
+        .add-container {
+        display: flex; /* Create a flex container */
+        align-items: center; /* Align button and input vertically */
+        top:55%;
+        position: absolute; /* Fix the container to the viewport */
+        right: 15%; /* Set right margin for the container */
+        transform: translateX(-25%); /* Center the container horizontally */
+        }
+        .revise {
+        margin-right: 10px; /* Add margin between button and input */
+        }
+
+        .revisetxt {
+        flex: 1; /* Allow input to expand and fill remaining space */
+        }
          .viewtxt{
-            right: 12%;
-            
-            position: absolute;
-            transform: translateX(-25%);
+            flex: 1; /* Allow input to expand and fill remaining space */
          }
          .part_desc{
             position: absolute;
-            right: 15%;
-            top: 44.5%; /*39.5*/
+            right: 700px;
+            top: 425px; /*39.5*/
+         }
+         .subjectdiv{
+            left: 200px;
+            top: 600px;
+            position:absolute;
          }
          .addquote{
-            right: 27.5%;
-            
-            position: absolute;
-            transform: translateX(-30%);
+            border-radius: 5px;
+         }
+         .logout{
+            border-radius: 5px;
          }
          .view{
-            right: 23.85%;
-            
-            position: absolute;
-            transform: translateX(-30%);
+            margin-right: 10px; /* Add margin between button and input */
          }
+         .view-container {
+        display: flex; /* Create a flex container */
+        align-items: center; /* Align button and input vertically */
+        top:59%;
+        position: absolute; /* Fix the container to the viewport */
+        right: 14.65%; /* Set right margin for the container */
+        transform: translateX(-25%); /* Center the container horizontally */
+        }
+        .customer-container {
+        /* display: flex; Create a flex container */
+        /* align-items: center; Align button and input vertically */
+        position: absolute; /* Fix the container to the viewport */
+        right: 150px; /* Set right margin for the container */
+        transform: translateX(-25%); /* Center the container horizontally */
+        }
          .cancel{
             left: 12%;
             
             position: absolute;
             transform: translateX(-30%);
          }   
-         .generate{
+         /* .generate{
             right: 12%;
-            
+            bottom:20%;
             position: absolute;
             transform: translateX(-30%);
-         }      
+         }       */
+         .incoterms{
+            left: 200px;
+            top:640px;
+            position:absolute;
+         }
+         .remarks{
+            left: 200px;
+            top:680px;
+            position:absolute;
+         }
+         .contact{
+            right:250px;
+            top:390px;
+            position:absolute;
+         }
          .desc{
             width: 5;
             height: 5;
@@ -70,6 +228,11 @@
             border: 1px solid #948f8f;
             padding: 7px;
          }
+         .customer-detail{
+            margin-left:150px;
+            margin-top: 100px;
+         }
+         
          #demo { border-collapse: collapse; }
          #demo tr:nth-child(odd) { background: #f2f2f2; }
          #demo td { padding: 10px; }
@@ -79,7 +242,40 @@
      </style>
  </head>
  <body>
-    <img src="https://s23.q4cdn.com/929369069/files/doc_downloads/multimedia-center/Horizontal-Logo-CMYK-[JPG].jpg"  height="50">
+    <div class="navbar">
+        <div class="left-buttons">
+            <a href="https://www.woodward.com/en/support/industrial/technical-help-desk/contact-support/engine-systems/middle-east" target="_blank">
+            <img src="{{ url_for('static', filename='WW_logo.png') }}"  height="50" alt="woodward">
+            </a>
+            <!-- Add other buttons as needed -->
+        </div>
+
+        <div class="right-buttons">
+            <form  action="/createquote" method="post">
+                <button class="addquote" type="submit" name="btn" value="addquote">Create New Quote</button>
+            </form>
+            <div class="dropdown">
+                <button class="dropbtn">Revise Quote</button>
+                <div class="dropdown-content" id="reviseDropdown">
+                    {% for excel_file in excel_files %}
+                        <a href="#" onclick="reviseExcel('{{ excel_file }}')">{{ excel_file }}</a>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="dropdown">
+                <button class="dropbtn">View Quote</button>
+                <div class="dropdown-content" id="excelDropdown">
+                    {% for excel_file in excel_files %}
+                        <a href="#" onclick="viewExcel('{{ excel_file }}')">{{ excel_file }}</a>
+                    {% endfor %}
+                </div>
+            </div>
+            <form  action="/logout" method="post">
+                <button class="logout" type="submit" name="btn" value="logout">Logout</button>
+            </form>
+        </div>
+    </div>
+
     
     {% if filename %}
        <div class="filename"><p><b>Offer:</b> {{ filename }}</p></div>
@@ -90,24 +286,100 @@
     {% if date_time %}
         <div class="filename"><p><b>Time:</b> {{ date_time }}</p></div>
     {% endif %}
-     <h1 style="color: #860100;">Quotation</h1>
-        <div>
-            
+     <h2 style="color: #860100;">QUOTATION</h2>
+     <div class="customer-detail">
+        <table border="1">
+            <tbody>
+                {% for item in cust_detail %}
+                    <tr>
+                        <td>{{ item }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 
-            <form action="/createquote" method="post">
-                <button class="addquote" type="submit" name="btn" value="addquote">Add New Quote</button>
+        <div>
+            <br>
+            <form action="/generate" method="post" class="customer" style="text-align: right; margin-right: 400px;">
+                <div class="customer-container">
+                <label for="cust_ref">Customer Ref:</label>
+                <input type="text" class="cust_ref"  id="cust_ref" name="cust_ref" required value="{{ request.form['cust_ref'] }}" > <br><br>
+                <label for="p_no">Project No:</label>
+                <input type="text" class="p_no"  id="p_no" name="p_no" style="margin-left:23px" value="{{ request.form['p_no'] }}"> <br><br>
+                <label for="p_name">Project Name:</label>
+                <input type="text" class="p_name"  id="p_name" name="p_name" value="{{ request.form['p_name'] }}" > <br><br>
+                </div>
+                <div class="subjectdiv">
+                <label for="subject">Subject:</label>
+                <input type="text" class="subject" id="subject" name="subject"><br><br>
+                </div>
+                <div class="incoterms">
+                    <label for="inco">Incoterms:</label>
+                        <select name="inco" id="inco">
+                        <option value="Ex-Works KSA" disabled>Ex-Works KSA</option>
+                        <option value="Ex-Works UAE" disabled>Ex-Works UAE</option>
+                        <option value="Ex-Works USA" disabled>Ex-Works USA</option>
+                        <option value="Ex-Works POLAND" disabled>Ex-Works POLAND</option>
+                        <option value="Ex-Works CHINA" disabled>Ex-Works CHINA</option>
+                        <option value="FCA KSA" disabled>FCA KSA</option>
+                        <option value="FCA UAE" selected>FCA UAE</option>
+                        <option value="FCA USA" >FCA USA</option>
+                        <option value="FCA POLAND" >FCA POLAND</option>
+                        <option value="FCA CHINA" >FCA CHINA</option>
+                        <option value="DDP" disabled>DDP</option>
+                        </select>
+                        <br>
+                        <br>
+
+                </div>
+                <div class="remarks">
+                    <label for="remarks">Pickup:</label>
+                        <select name="remark" id="remark">
+                        <option value="KSA" disabled>KSA</option>
+                        <option value="UAE" selected>UAE</option>
+                        <option value="USA" >USA</option>
+                        <option value="Poland" >Poland</option>
+                        <option value="China" >China</option>
+                        </select>
+                </div>
+
+                <div class="contact">
+                    <label for="contact">Contact:</label>
+                        <select name="contact" id="contact">
+                        <option value="Sreejith Nair" >Sreejith Nair</option>
+                        <option value="Prasanth Koroth" >Prasanth Koroth</option>
+                        <option value="Neil Baretto" >Neil Baretto</option>
+                        <option value="V Sujith" >V Sujith</option>
+                        <option value="Amit Tiwari" >Amit Tiwari</option>
+                        <option value="Geetha Chukka" >Geetha Chukka</option>
+                        </select>
+                </div>
+                
+                <button class="generate" type="submit" name="btn" value="generate">Generate <br> Docx</button>
+
             </form>
-            <form action="/revise" method="post">
+
+            <form action="/generatepdf" method="post">
+                <button  class="generate-pdf" type="submit" name="btn" value="generate-pdf">Generate <br>Pdf</button>
+            </form>
+
+            <br>
+            <br>
+            </form>
             
-                <button class="revise" type="submit" name="btn" value="revise" >Revise</button>
-                <input class="revisetxt" type="text" class="file" style="margin-left: 1070px;"  id="file" name="file" placeholder="Enter Quote number..." >
-            </form>
             <br>
-            <form action="/view" method="post">
-            <br>
-                <button class="view" type="submit" name="btn" value="revise" >View Quote</button>
-                <input class="viewtxt" type="text" class="file" style="margin-left: 1070px;"  id="file" name="file" placeholder="Enter Quote number..." required>
-            </form>
+            <!-- <form action="/view" method="post" id="viewForm">
+                <div class="view-container">
+                    <label for="view_quote">View Quote:</label>
+                    <select class="viewtxt" name="view_quote" id="view_quote" onchange="submitForm()">
+                        <option value="" disabled selected>Select an Excel file</option>
+                        {% for excel_file in excel_files %}
+                            <option value="{{ excel_file }}">{{ excel_file }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </form> -->
         </div>
     
     
@@ -115,21 +387,24 @@
      <br>
      <div class="quotation-section">
          <form  method="post">
-            <div>
+            <div>  
+                <br>
+                <br>
+                <br>
                 <div class="part_desc"  id="description"></div>
-             <label for="part_no">Enter Part Number:</label>
+             <label for="part_no">Part Number:</label>
              <input type="text" style="margin-left:70px" id="part_no" name="part_no" placeholder="Enter Part Number..." value="{{ request.form['part_no'] }}" oninput="search()"  required>  
             </div>
             <br>
-             <label for="quantity">Enter Quantity</label>
-             <input type="text" style="margin-left:105px" id="quantity" name="quantity" placeholder="Enter Quantity...">
+             <label for="quantity">Quantity:</label>
+             <input type="number" min="0" step="1" style="margin-left:105px" id="quantity" name="quantity" placeholder="Enter Quantity..." required>
              <button class ="add" type="submit" name="btn" value="copy" formaction="/copy">Add</button>
               <br>
          </form>
          <br>
     
          <form action="/delete" method="post">
-             <label for="del_id">Enter Part Number to Delete:</label>
+             <label for="del_id">Part Number to Delete:</label>
              <input type="text" id="del_id" name="del_id" placeholder="Enter Part Number..." >
              <button type="submit" name="btn" value="delete">Delete!</button>
          </form>
@@ -142,32 +417,42 @@
          <br>
          <br>
      </div>
- 
-     <!-- Table Section -->
-     <div class="table-section">
-         <table id="demo" style="margin-left:auto;margin-right:auto;">
-             {% for row in range(1, sheet.max_row + 1) %}
-                 <tr>
-                     {% for col in range(1, sheet.max_column + 1): %}
-                         <td>{{ sheet.cell(row, col).value }}</td>
-                     {% endfor %}
-                 </tr>
-             {% endfor %}
-         </table>
- 
-         <br>
-     </div>
+    
+  
 
-     
+    <div class="table-section">
+        <table id="demo" style="margin-left:auto;margin-right:auto; border-collapse: collapse; width: 80%; margin-top: 20px;">
+            <thead>
+                <tr style="background-color: #6c7881; color: #ffffff;">
+                    {% for header in headers %}
+                        <th style="padding: 10px; border: 1px solid #dddddd; text-align: left;">{{ header }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in range(1, sheet.max_row + 1) %}
+                    <tr{% if row == 1 %} style="background-color: #6c7881; color: #ffffff;"{% endif %}>
+                        {% for col in range(1, sheet.max_column + 1) %}
+                            <td style="padding: 8px; border: 1px solid #dddddd;">{{ sheet.cell(row, col).value }}</td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    
+        <br>
+    </div>
+    
+
 
      <br>
      <br>
      <form action="/deleted" method="post">
         <button class="cancel" type="submit" name="btn" value="cancel">Cancel</button>
      </form>
-     <form action="/generate" method="post">
+     <!-- <form action="/generate" method="post">
         <button class="generate" type="submit" name="btn" value="generate">Generate</button>
-     </form>
+     </form> -->
 
      <script>
         function search() {
@@ -182,6 +467,18 @@
                 }
             });
         }
+
+        function submitForm() {
+        document.getElementById("viewForm").submit();
+    }
+       
+    function viewExcel(fileName) {
+        window.location.href = "/view/" + fileName;
+    }
+    function reviseExcel(fileName) {
+        window.location.href = "/revise/" + fileName;
+    }
+
     </script>
     
     
