@@ -21,9 +21,10 @@ app.config['SECRET_KEY'] = os.urandom(24).hex()
 # Initialize ws as a global variable
 ws = None
 
-cust = None
+cust_detial = None
 
-users = {'N0025': {'userid': 'N0025', 'password': 'ww',},}
+users = {'N0025': {'userid': 'N0025', 'password': 'ww',},
+         'N0035':{'userid': 'N0035', 'password':'qq'}}
 
 
 
@@ -167,7 +168,7 @@ def fill_template(data,offer,rev_name):
             'cust_email' : offer['cust_email'],
             'cust_no' : offer['cust_no'],
             'cust_phno': offer['cust_phno'],
-            'words': offer['words']
+
         }
     
     cust_row.append(cust_dict)
@@ -315,9 +316,8 @@ def generate():
                 'total_price': ws.cell(row=row, column=6).value,
             }    
             document.add_paragraph()
-
+            total = format(total,'.2f')
             data_list.append(data)
-        words = convert_to_words(int(total))
         
         print(data_list)
         print(total)
@@ -346,7 +346,7 @@ def generate():
             'cust_email' : cust_email,
             'cust_no' : cust_no,
             'cust_phno': cust_phno,
-            'words': words
+
 
         }
         off_list.append(offer)
@@ -524,10 +524,10 @@ def revise(file_name):
         res = len(wb.sheetnames)
         filename1 = filename + "_" + wb.sheetnames[-1]
         excel_files = get_excel_files()
-        return render_template('revise.html', filename=filename1, date=d, date_time=date_time,result_message=None, sheet=ws1,excel_files=excel_files)
+        return render_template('revise.html', filename=filename1, date=d, date_time=date_time,result_message=None, sheet=ws1,excel_files=excel_files,cust_detail=cust_detail)
     except Exception as e:
         result_message = f"Error revising file: {str(e)}"
-        return render_template('revise.html', filename=filename1, date=d, date_time=date_time,result_message=result_message, sheet=None,excel_files=excel_files)
+        return render_template('revise.html', filename=filename1, date=d, date_time=date_time,result_message=result_message, sheet=None,excel_files=excel_files,cust_detail=cust_detail)
 
 
 
@@ -575,7 +575,7 @@ def indexrev():
         print(res)
         ws = wb.worksheets[res-1]
         excel_files = get_excel_files()
-    return render_template("revise.html",filename=filename,date=d, sheet=ws,excel_files=excel_files)
+    return render_template("revise.html",filename=filename,date=d, sheet=ws,excel_files=excel_files,cust_detail=cust_detail)
 
 
 #-------------------------------ADD PRODUCT FOR REVISE---------------------------
@@ -657,7 +657,7 @@ def addrev():
 
         filename1 = filename+"_" +wb.sheetnames[-1]
         excel_files = get_excel_files()
-        return render_template('revise.html',filename=filename1, result_message=None, sheet=ws,date_time=date_time, part_data = part_data,date= d,excel_files=excel_files)
+        return render_template('revise.html',filename=filename1, result_message=None, sheet=ws,date_time=date_time, part_data = part_data,date= d,excel_files=excel_files,cust_detail=cust_detail)
     return render_template('revise.html',filename=filename1,  sheet=ws, part_data = part_data,date=d)
 
 #------------------------------CANCEL FOR REVISION------------------------------
@@ -679,7 +679,7 @@ def cancelrev():
     # else:
     filename = file[:14] + "_" + wb.sheetnames[-1]
     excel_files = get_excel_files()
-    return render_template('revise.html',filename=filename,date=d, date_time=date_time,result_message=None, sheet=ws,excel_files=excel_files)
+    return render_template('revise.html',filename=filename,date=d, date_time=date_time,result_message=None, sheet=ws,excel_files=excel_files,cust_detail=cust_detail)
 
 #-------------------------------UPDATE FOR REVISION------------------------------
 @app.route('/update', methods=['POST'])
@@ -709,7 +709,7 @@ def update():
             ws.cell(row=cell,column=6,value=total_pr)
     wb.save(file)
     excel_files = get_excel_files()
-    return render_template("revise.html",filename=filename1,date=d, date_time=date_time,result_message=None, sheet=ws,excel_files=excel_files)
+    return render_template("revise.html",filename=filename1,date=d, date_time=date_time,result_message=None, sheet=ws,excel_files=excel_files,cust_detail=cust_detail)
 
 
 #---------------------------------DELETE FOR REVISON------------------------------
@@ -737,7 +737,7 @@ def deleterev():
             wb.save(file)
             break
     excel_files = get_excel_files()
-    return render_template('revise.html', date=d,filename = filename1,date_time=date_time,result_message=None,sheet=ws,excel_files=excel_files)
+    return render_template('revise.html', date=d,filename = filename1,date_time=date_time,result_message=None,sheet=ws,excel_files=excel_files,cust_detail=cust_detail)
 
 
 #------------------------------TOTAL FOR REVISION-----------------------------------
@@ -766,7 +766,7 @@ def totalrev():
     ws.cell(row=ws.max_row,column=3, value="TOTAL PRICE")
 
     excel_files = get_excel_files()
-    return render_template('revise.html',filename=filename1,date_time=date_time,date=d, sheet=ws,excel_files=excel_files)
+    return render_template('revise.html',filename=filename1,date_time=date_time,date=d, sheet=ws,excel_files=excel_files,cust_detail=cust_detail)
 
 
 
@@ -785,7 +785,7 @@ def createquote():
     date_time = now.strftime("%I:%M %p")
     print("THIS IS FILE NAME============================",file)
     excel_files = get_excel_files()
-    return render_template("add.html", result_message=None,date=d,date_time=date_time, filename= filename,sheet=ws,excel_files=excel_files)
+    return render_template("add.html", result_message=None,date=d,date_time=date_time, filename= filename,sheet=ws,excel_files=excel_files,cust_detail=cust_detail)
 
 #---------------------------------ADD NEW PRODUCT FOR QUOTE--------------------------
 
@@ -837,7 +837,7 @@ def delete():
                 wb.save(file)
                 break
         excel_files = get_excel_files()
-        return render_template('index.html',filename=filename,date=d, date_time=date_time,result_message=None,sheet=ws,excel_files=excel_files)
+        return render_template('index.html',filename=filename,date=d, date_time=date_time,result_message=None,sheet=ws,excel_files=excel_files,cust_detail=cust_detail)
     
 
 #----------------------------VIEWING QUOTE-----------------------------------
@@ -864,7 +864,7 @@ def view(file_name):
         result_message = "No File Found: " + str(e)
         return render_template("index.html", result_message=result_message, date_time=date_time, filename=filename, date=d, sheet=ws)
     excel_files = get_excel_files()
-    return render_template("view.html", filename=filename1, date=d, date_time=date_time, sheet=ws,excel_files=excel_files)
+    return render_template("view.html", filename=filename1, date=d, date_time=date_time, sheet=ws,excel_files=excel_files,cust_detail=cust_detail)
 
 
 
@@ -932,7 +932,7 @@ def cancel():
     print(file)
     os.remove(file)
     excel_files = get_excel_files()
-    return render_template('index.html',filename=filename,date_time=date_time,date=d, sheet=ws,excel_files=excel_files)
+    return render_template('index.html',filename=filename,date_time=date_time,date=d, sheet=ws,excel_files=excel_files,cust_detail=cust_detail)
 
 
 
@@ -953,6 +953,7 @@ def home():
     global cust_ref
     global pno
     global pname
+    global cust_detail
 
     user = session.get('user')
 
@@ -975,7 +976,9 @@ def home():
 
                     cust_detail.append(custws.cell(row=row,column=col).value)
                 break
-        cust_detail = [item for item in cust_detail if item.strip()]
+        print(cust_detail)
+        cust_detail = [item.strip() for item in cust_detail if item and isinstance(item, str) and item.strip()]
+
         print("this is customer detail", cust_detail)
 
         filename = file[:14]
@@ -1103,7 +1106,7 @@ def copy():
             result_message = f"Part details for ID {part_no} not found."
         filename = file[:14]
         excel_files = get_excel_files()
-        return render_template('index.html', result_message=None,date_time=date_time,filename=filename,date=d, sheet=ws,excel_files=excel_files)
+        return render_template('index.html', result_message=None,date_time=date_time,filename=filename,date=d, sheet=ws,excel_files=excel_files,cust_detail=cust_detail)
     return render_template('index.html',filename=filename,date=d, sheet=ws)
 
 #----------------------------------GETTING TOTAL PRICE-------------------------------
@@ -1139,7 +1142,7 @@ def total():
     ws.cell(row=ws.max_row,column=2, value="TOTAL PRICE")
     excel_files = get_excel_files()
     
-    return render_template('index.html',filename=filename,date=d,date_time=date_time, sheet=ws,excel_files=excel_files)
+    return render_template('index.html',filename=filename,date=d,date_time=date_time, sheet=ws,excel_files=excel_files,cust_detail=cust_detail)
 
 #------------------------------SHOWS TABLE-----------------------------------------
 
@@ -1153,7 +1156,7 @@ def index():
         res = len(wb.sheetnames)
         ws = wb.worksheets[res-1]
     excel_files = get_excel_files()
-    return render_template("index.html",filename=filename,date_time=date_time,date=d, sheet=ws,excel_files=excel_files)
+    return render_template("index.html",filename=filename,date_time=date_time,date=d, sheet=ws,excel_files=excel_files,cust_detail=cust_detail)
 
 
 #----------MAIN----------

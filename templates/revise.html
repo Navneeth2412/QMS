@@ -7,362 +7,302 @@
     <title>Quoatation</title>
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <style>
-body, html {
-   margin: 0;
-   padding: 0;
-}
-.dropdown {
-   display: inline-block;
-}
-
-.dropdown-content {
-   display: none;
-   position: absolute;
-   background-color: #6c7881;
-   min-width: 160px;
-   box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-   z-index: 1;
-}
-
-.dropdown-content a {
-   color: black;
-   padding: 12px 16px;
-   text-decoration: none;
-   display: block;
-}
-
-.dropdown-content a:hover {
-   background-color: #f1f1f1;
-
-}
-
-.dropdown:hover .dropdown-content {
-   display: block;
-}
-
-.dropbtn {
-   background-color: #6c7881;
-   color: white;
-   padding: 14px 16px;
-   border: none;
-   border-radius: 5px;
-   cursor: pointer;
-   transition: background-color 0.3s;
-}
-
-.dropbtn:hover {
-   background-color: #095d95;
-}
-
-   .generate {
-       background-color: #6c7881;
-       color: white;
-       padding: 14px 16px;
-       border: none;
-       border-radius: 5px;
-       cursor: pointer;
-       transition: background-color 0.3s;
-       position: absolute;
-       right: 120px;
-       top: 100px;
-
-   }
-
-   .generate:hover {
-       background-color: #095d95;
-   }
-   .generate-pdf {
-       background-color: #6c7881;
-       color: white;
-       padding: 14px 16px;
-       border: none;
-       border-radius: 5px;
-       cursor: pointer;
-       transition: background-color 0.3s;
-       position: absolute;
-       right: 10px;
-       top: 100px;
-
-   }
-
-   .generate-pdf:hover {
-       background-color: #860100;
-   }
-.navbar {
-           background-color: #6c7881;
-           overflow: hidden;
-           display: flex;
-           justify-content: space-between;
-           align-items: center;
-
-       }
-
-       .navbar .right-buttons {
-           display: flex;
-       }
-
-       .navbar button, .navbar a {
-           background: none;
-           border: none;
-           color: #ffffff;
-           text-decoration: none;
-           font-size: 16px;
-           cursor: pointer;
-           padding: 14px 16px;
-           display: block;
-           margin-left: 10px;
-           transition: background-color 0.3s; /* Added transition for smooth hover effect */
-       }
-
-       .navbar button:hover, .navbar a:hover {
-           background-color: #860100;
-           text-decoration: none;
-           font-weight: bold;
-       }
-
-       h2 {text-align: center;
-       font-size: x-large;}
-       .quotation-section {
-        text-align: left;
-        margin-top: 90px;
-        margin-left: 100px;
-    }
-        * {
-            font-family: arial, sans-serif;
-            box-sizing: border-box;
+        body, html {
+            margin: 0;
+            padding: 0;
         }
-       body{
-           background-color: #f4f4f4;
-       }
-        .revise-container {
-       display: flex; /* Create a flex container */
-       align-items: center; /* Align button and input vertically */
-       top:55%;
-       position: absolute; /* Fix the container to the viewport */
-       right: 15%; /* Set right margin for the container */
-       transform: translateX(-25%); /* Center the container horizontally */
-       }
-       .add-container {
-       display: flex; /* Create a flex container */
-       align-items: center; /* Align button and input vertically */
-       top:55%;
-       position: absolute; /* Fix the container to the viewport */
-       right: 15%; /* Set right margin for the container */
-       transform: translateX(-25%); /* Center the container horizontally */
-       }
-       .revise {
-       margin-right: 10px; /* Add margin between button and input */
-       }
-
-       .revisetxt {
-       flex: 1; /* Allow input to expand and fill remaining space */
-       }
-        .viewtxt{
-           flex: 1; /* Allow input to expand and fill remaining space */
+        .dropdown {
+            display: inline-block;
         }
-        .part_desc{
-           position: absolute;
-           right: 700px;
-           top: 425px; /*39.5*/
+        
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #6c7881;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
         }
-        .subjectdiv{
-           left: 200px;
-           top: 290px;
-           position:absolute;
-        }
-        .addquote{
-           margin-right: 210px;
-        }
-        .view{
-           margin-right: 10px; /* Add margin between button and input */
-        }
-        .view-container {
-       display: flex; /* Create a flex container */
-       align-items: center; /* Align button and input vertically */
-       top:59%;
-       position: absolute; /* Fix the container to the viewport */
-       right: 14.65%; /* Set right margin for the container */
-       transform: translateX(-25%); /* Center the container horizontally */
-       }
-       .customer-container {
-       /* display: flex; Create a flex container */
-       /* align-items: center; Align button and input vertically */
-       position: absolute; /* Fix the container to the viewport */
-       right: 150px; /* Set right margin for the container */
-       transform: translateX(-25%); /* Center the container horizontally */
-       }
-        .cancel{
-           left: 12%;
-           
-           position: absolute;
-           transform: translateX(-30%);
-        }   
-        /* .generate{
-           right: 12%;
-           bottom:20%;
-           position: absolute;
-           transform: translateX(-30%);
-        }       */
-        .incoterms{
-           left: 200px;
-           top:330px;
-           position:absolute;
-        }
-        .remarks{
-           left: 200px;
-           top:370px;
-           position:absolute;
-        }
-        .contact{
-           right:250px;
-           top:390px;
-           position:absolute;
-        }
-        .desc{
-           width: 5;
-           height: 5;
-           display: inline-block;
-           border: 1px solid #948f8f;
-           padding: 7px;
-        }
-        #demo { border-collapse: collapse; }
-        #demo tr:nth-child(odd) { background: #f2f2f2; }
-        #demo td { padding: 10px; }
-        .table-section {
+        
+        .dropdown-content a {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
             display: block;
         }
-    </style>
+        
+        .dropdown-content a:hover {
+            background-color: #f1f1f1;
+        
+        }
+        
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+        
+        .dropbtn {
+            background-color: #6c7881;
+            color: white;
+            padding: 14px 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .dropbtn:hover {
+            background-color: #095d95;
+        }
+        
+            .generate {
+                background-color: #6c7881;
+                color: white;
+                padding: 14px 16px;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                transition: background-color 0.3s;
+                position: absolute;
+                right: 120px;
+                top: 100px;
+        
+            }
+        
+            .generate:hover {
+                background-color: #095d95;
+            }
+            .generate-pdf {
+                background-color: #6c7881;
+                color: white;
+                padding: 14px 16px;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                transition: background-color 0.3s;
+                position: absolute;
+                right: 10px;
+                top: 100px;
+        
+            }
+        
+            .generate-pdf:hover {
+                background-color: #860100;
+            }
+        .navbar {
+                    background-color: #6c7881;
+                    overflow: hidden;
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+        
+                }
+        
+                .navbar .right-buttons {
+                    display: flex;
+                }
+        
+                .navbar button, .navbar a {
+                    background: none;
+                    border: none;
+                    color: #ffffff;
+                    text-decoration: none;
+                    font-size: 16px;
+                    cursor: pointer;
+                    padding: 14px 16px;
+                    display: block;
+                    margin-left: 10px;
+                    transition: background-color 0.3s; /* Added transition for smooth hover effect */
+                }
+        
+                .navbar button:hover, .navbar a:hover {
+                    background-color: #860100;
+                    text-decoration: none;
+                    font-weight: bold;
+                }
+        
+                h2 {text-align: center;
+                font-size: x-large;}
+                .quotation-section {
+                    text-align: left;
+                padding-left: 114px;
+                margin-top: 60px;
+            }
+                 * {
+                     font-family: arial, sans-serif;
+                     box-sizing: border-box;
+                 }
+                body{
+                    background-color: #f4f4f4;
+                }
+                 .revise-container {
+                display: flex; /* Create a flex container */
+                align-items: center; /* Align button and input vertically */
+                top:55%;
+                position: absolute; /* Fix the container to the viewport */
+                right: 15%; /* Set right margin for the container */
+                transform: translateX(-25%); /* Center the container horizontally */
+                }
+                .add-container {
+                display: flex; /* Create a flex container */
+                align-items: center; /* Align button and input vertically */
+                top:55%;
+                position: absolute; /* Fix the container to the viewport */
+                right: 15%; /* Set right margin for the container */
+                transform: translateX(-25%); /* Center the container horizontally */
+                }
+                .revise {
+                margin-right: 10px; /* Add margin between button and input */
+                }
+        
+                .revisetxt {
+                flex: 1; /* Allow input to expand and fill remaining space */
+                }
+                 .viewtxt{
+                    flex: 1; /* Allow input to expand and fill remaining space */
+                 }
+                 .part_desc{
+                    position: absolute;
+                    right: 700px;
+                    top: 610px; /*39.5*/
+                 }
+                 .subjectdiv{
+                    left: 230px;
+                    top: 560px;
+                    position:absolute;
+                 }
+                 .subject{
+                    margin-left:118px
+                 }
+                 .addquote{
+                    border-radius: 5px;
+                 }
+                 .logout{
+                    border-radius: 5px;
+                 }
+                 .view{
+                    margin-right: 10px; /* Add margin between button and input */
+                 }
+                 .view-container {
+                display: flex; /* Create a flex container */
+                align-items: center; /* Align button and input vertically */
+                top:59%;
+                position: absolute; /* Fix the container to the viewport */
+                right: 14.65%; /* Set right margin for the container */
+                transform: translateX(-25%); /* Center the container horizontally */
+                }
+                .customer-container {
+                /* display: flex; Create a flex container */
+                /* align-items: center; Align button and input vertically */
+                position: absolute; /* Fix the container to the viewport */
+                right: 300px;
+                top: 350px; /* Set right margin for the container */
+                transform: translateX(-25%); /* Center the container horizontally */
+                }
+                 .cancel{
+                    left: 12%;
+                    bottom: 50px;
+                    position: relative;
+                    transform: translateX(-30%);
+                 }   
+                 /* .generate{
+                    right: 12%;
+                    bottom:20%;
+                    position: absolute;
+                    transform: translateX(-30%);
+                 }       */
+                 .incoterms{
+                    right: 1100px;
+                    bottom:0px;
+                    position:relative;
+                 }
+                 .remarks{
+                    right: 1190px;
+                    bottom:0px;
+                    position:relative;
+                 }
+                 .contact{
+                    right:390px;
+                    top:500px;
+                    position:absolute;
+                 }
+                 .desc{
+                    width: 5;
+                    height: 5;
+                    display: inline-block;
+                    border: 1px solid #948f8f;
+                    padding: 7px;
+                 }
+                 .customer-detail{
+                    margin-left:230px;
+                    margin-top: 100px;
+                 }
+                 
+                 #demo { border-collapse: collapse; }
+                 #demo tr:nth-child(odd) { background: #f2f2f2; }
+                 #demo td { padding: 10px; }
+                 .table-section {
+                     display: block;
+                 }
+             </style>
 </head>
 <body>
-   <div class="navbar">
-       <div class="left-buttons">
-        <a href="https://www.woodward.com/en/support/industrial/technical-help-desk/contact-support/engine-systems/middle-east" target="_blank">
+    <div class="navbar">
+        <div class="left-buttons">
+            <a href="https://www.woodward.com/en/support/industrial/technical-help-desk/contact-support/engine-systems/middle-east" target="_blank">
             <img src="{{ url_for('static', filename='WW_logo.png') }}"  height="50" alt="woodward">
             </a>
-           <!-- Add other buttons as needed -->
-       </div>
+            <!-- Add other buttons as needed -->
+        </div>
 
-       <div class="right-buttons">
-           <form action="/createquote" method="post">
-               <button type="submit" name="btn" value="addquote">Create New Quote</button>
-           </form>
-           <div class="dropdown">
-               <button class="dropbtn">Revise Quote</button>
-               <div class="dropdown-content" id="reviseDropdown">
-                   {% for excel_file in excel_files %}
-                       <a href="#" onclick="reviseExcel('{{ excel_file }}')">{{ excel_file }}</a>
-                   {% endfor %}
-               </div>
-           </div>
-           <div class="dropdown">
-               <button class="dropbtn">View Quote</button>
-               <div class="dropdown-content" id="excelDropdown">
-                   {% for excel_file in excel_files %}
-                       <a href="#" onclick="viewExcel('{{ excel_file }}')">{{ excel_file }}</a>
-                   {% endfor %}
-               </div>
-           </div>
-           <form action="/logout" method="post">
-               <button type="submit" name="btn" value="logout">Logout</button>
-           </form>
-       </div>
-   </div>
+        <div class="right-buttons">
+            <form  action="/createquote" method="post">
+                <button class="addquote" type="submit" name="btn" value="addquote">Create New Quote</button>
+            </form>
+            <div class="dropdown">
+                <button class="dropbtn">Revise Quote</button>
+                <div class="dropdown-content" id="reviseDropdown">
+                    {% for excel_file in excel_files %}
+                        <a href="#" onclick="reviseExcel('{{ excel_file }}')">{{ excel_file }}</a>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="dropdown">
+                <button class="dropbtn">View Quote</button>
+                <div class="dropdown-content" id="excelDropdown">
+                    {% for excel_file in excel_files %}
+                        <a href="#" onclick="viewExcel('{{ excel_file }}')">{{ excel_file }}</a>
+                    {% endfor %}
+                </div>
+            </div>
+            <form  action="/logout" method="post">
+                <button class="logout" type="submit" name="btn" value="logout">Logout</button>
+            </form>
+        </div>
+    </div>
 
-   
-   {% if filename %}
-      <div class="filename"><p><b>Offer:</b> {{ filename }}</p></div>
-   {% endif %}
-   {% if date %}
-       <div class="filename"><p><b>Date:</b> {{ date }}</p></div>
-   {% endif %}
-   {% if date_time %}
-       <div class="filename"><p><b>Time:</b> {{ date_time }}</p></div>
-   {% endif %}
-    <h2 style="color: #860100;">QUOTATION</h2>
-       <div>
-           <br>
-           <form action="/generate" method="post" class="customer" style="text-align: right; margin-right: 400px;">
-               <div class="customer-container">
-               <label for="cust_ref">Customer Ref:</label>
-               <input type="text" class="cust_ref"  id="cust_ref" name="cust_ref" required value="{{ request.form['cust_ref'] }}" > <br><br>
-               <label for="p_no">Project No:</label>
-               <input type="text" class="p_no"  id="p_no" name="p_no" style="margin-left:23px" value="{{ request.form['p_no'] }}"> <br><br>
-               <label for="p_name">Project Name:</label>
-               <input type="text" class="p_name"  id="p_name" name="p_name" value="{{ request.form['p_name'] }}" > <br><br>
-               </div>
-               <div class="subjectdiv">
-               <label for="subject">Subject:</label>
-               <input type="text" class="subject" id="subject" name="subject"><br><br>
-               </div>
-               <div class="incoterms">
-                   <label for="inco">Incoterms:</label>
-                       <select name="inco" id="inco">
-                       <option value="Ex-Works KSA" disabled>Ex-Works KSA</option>
-                       <option value="Ex-Works UAE" disabled>Ex-Works UAE</option>
-                       <option value="Ex-Works USA" disabled>Ex-Works USA</option>
-                       <option value="Ex-Works POLAND" disabled>Ex-Works POLAND</option>
-                       <option value="Ex-Works CHINA" disabled>Ex-Works CHINA</option>
-                       <option value="FCA KSA" disabled>FCA KSA</option>
-                       <option value="FCA UAE" selected>FCA UAE</option>
-                       <option value="FCA USA" >FCA USA</option>
-                       <option value="FCA POLAND" >FCA POLAND</option>
-                       <option value="FCA CHINA" >FCA CHINA</option>
-                       <option value="DDP" disabled>DDP</option>
-                       </select>
-                       <br>
-                       <br>
-
-               </div>
-               <div class="remarks">
-                   <label for="remarks">Pickup:</label>
-                       <select name="remark" id="remark">
-                       <option value="KSA" disabled>KSA</option>
-                       <option value="UAE" selected>UAE</option>
-                       <option value="USA" >USA</option>
-                       <option value="Poland" >Poland</option>
-                       <option value="China" >China</option>
-                       </select>
-               </div>
-
-               <div class="contact">
-                   <label for="contact">Contact:</label>
-                       <select name="contact" id="contact">
-                       <option value="Sreejith Nair" >Sreejith Nair</option>
-                       <option value="Prasanth Koroth" >Prasanth Koroth</option>
-                       <option value="Neil Baretto" >Neil Baretto</option>
-                       <option value="V Sujith" >V Sujith</option>
-                       <option value="Amit Tiwari" >Amit Tiwari</option>
-                       <option value="Geetha Chukka" >Geetha Chukka</option>
-                       </select>
-               </div>
-               
-               <button class="generate" type="submit" name="btn" value="generate">Generate <br> Docx</button>
-
-           </form>
-
-           <form action="/generatepdf" method="post">
-               <button class="generate-pdf" type="submit" name="btn" value="generate-pdf">Generate <br>Pdf</button>
-           </form>
-
-           <br>
-           <br>
-           </form>
-           
-           <br>
-           <!-- <form action="/view" method="post" id="viewForm">
-               <div class="view-container">
-                   <label for="view_quote">View Quote:</label>
-                   <select class="viewtxt" name="view_quote" id="view_quote" onchange="submitForm()">
-                       <option value="" disabled selected>Select an Excel file</option>
-                       {% for excel_file in excel_files %}
-                           <option value="{{ excel_file }}">{{ excel_file }}</option>
-                       {% endfor %}
-                   </select>
-               </div>
-           </form> -->
-       </div>
-   
-   
+    
+    {% if filename %}
+       <div class="filename"><p><b>Offer:</b> {{ filename }}</p></div>
+    {% endif %}
+    {% if date %}
+        <div class="filename"><p><b>Date:</b> {{ date }}</p></div>
+    {% endif %}
+    {% if date_time %}
+        <div class="filename"><p><b>Time:</b> {{ date_time }}</p></div>
+    {% endif %}
+     <h2 style="color: #860100;">QUOTATION</h2>
+     <div class="customer-detail" style="width: 100%; min-height: 200px;">
+        <table border="1">
+            <tbody>
+                {% for item in cust_detail %}
+                    <tr>
+                        <td>{{ item }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
     <!-- Quotation Section       -->
     <br>
     <div class="quotation-section">
@@ -370,17 +310,17 @@ body, html {
             <form action="/update" method="post">
                 <div>
                 <div class="part_desc"  id="description"></div>
-                <label for="part_no">Enter Serial Number:</label>
+                <label for="part_no">Serial Number:</label>
                 <input style="margin-left:70px"type="text"  id="slno" name="slno" placeholder="Enter Sl No...">
     
                 </div>
                 <br>
                 <div>
-                 <label for="part_no">Enter Part Number:</label>
+                 <label for="part_no">Part Number:</label>
                  <input type="text" style="margin-left:83px" id="part_no" name="part_no" placeholder="Enter Part Number..." value="{{ request.form['part_no'] }}" oninput="search()" >  
                  </div>
                 <br>
-                <label for="quantity">Enter Quantity</label>
+                <label for="quantity">Quantity</label>
                 <input type="text" style="margin-left:117px" id="quantity" name="quantity" placeholder="Enter Quantity...">
                 <button type="submit" name="btn" value="update">Update</button>
                 <button type="submit" name="btn" value="addprod" formaction="/addrev">Add Product</button>
@@ -404,64 +344,146 @@ body, html {
 
  
 
-   <div class="table-section">
-       <table id="demo" style="margin-left:auto;margin-right:auto; border-collapse: collapse; width: 80%; margin-top: 20px;">
-           <thead>
-               <tr style="background-color: #6c7881; color: #ffffff;">
-                   {% for header in headers %}
-                       <th style="padding: 10px; border: 1px solid #dddddd; text-align: left;">{{ header }}</th>
-                   {% endfor %}
-               </tr>
-           </thead>
-           <tbody>
-               {% for row in range(1, sheet.max_row + 1) %}
-                   <tr{% if row == 1 %} style="background-color: #6c7881; color: #ffffff;"{% endif %}>
-                       {% for col in range(1, sheet.max_column + 1) %}
-                           <td style="padding: 8px; border: 1px solid #dddddd;">{{ sheet.cell(row, col).value }}</td>
-                       {% endfor %}
-                   </tr>
-               {% endfor %}
-           </tbody>
-       </table>
-   
-       <br>
-   </div>
-   
-
-
-    <br>
-    <br>
-    <form action="/deleted" method="post">
-       <button class="cancel" type="submit" name="btn" value="cancel">Cancel</button>
-    </form>
-    <!-- <form action="/generate" method="post">
-       <button class="generate" type="submit" name="btn" value="generate">Generate</button>
-    </form> -->
-
-    <script>
-       function search() {
-           var partNumber = $('#part_no').val();
-           $.post('/search', {part_no: partNumber}, function(data) {
-               var resultDiv = $('#description');
-               resultDiv.empty();
-               if (data.part_data) {
-                   resultDiv.append('<p><strong>Part Description:</strong> ' + data.part_data[1] + '</p>');
-               } else {
-                   resultDiv.append('<p>No Part found with the given Part number.</p>');
-               }
-           });
-       }
-
-       function submitForm() {
-       document.getElementById("viewForm").submit();
-   }
-      
-   function viewExcel(fileName) {
-       window.location.href = "/view/" + fileName;
-   }
-   function reviseExcel(fileName) {
-       window.location.href = "/revise/" + fileName;
-   }
+        <div class="table-section">
+            <table id="demo" style="margin-left:auto;margin-right:auto; border-collapse: collapse; width: 80%; margin-top: 20px;">
+                <thead>
+                    <tr style="background-color: #6c7881; color: #ffffff;">
+                        {% for header in headers %}
+                            <th style="padding: 10px; border: 1px solid #dddddd; text-align: left;">{{ header }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in range(1, sheet.max_row + 1) %}
+                        <tr{% if row == 1 %} style="background-color: #6c7881; color: #ffffff;"{% endif %}>
+                            {% for col in range(1, sheet.max_column + 1) %}
+                                <td style="padding: 8px; border: 1px solid #dddddd;">{{ sheet.cell(row, col).value }}</td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        
+            <br>
+        </div>
+        <div>
+            <br>
+            <form action="/generate" method="post" class="customer" style="text-align: right; margin-right: 400px;">
+                <div class="customer-container">
+                <label for="cust_ref">Customer Ref:</label>
+                <input type="text" class="cust_ref"  id="cust_ref" name="cust_ref" required value="{{ request.form['cust_ref'] }}" > <br><br>
+                <label for="p_no">Project No:</label>
+                <input type="text" class="p_no"  id="p_no" name="p_no" style="margin-left:23px" value="{{ request.form['p_no'] }}"> <br><br>
+                <label for="p_name">Project Name:</label>
+                <input type="text" class="p_name"  id="p_name" name="p_name" value="{{ request.form['p_name'] }}" > <br><br>
+                </div>
+                <div class="subjectdiv">
+                <label for="subject">Subject:</label>
+                <input type="text" class="subject" id="subject" name="subject"><br><br>
+                </div>
+                <div class="incoterms">
+                    <label for="inco">Incoterms:</label>
+                        <select name="inco" id="inco">
+                        <option value="Ex-Works KSA" disabled>Ex-Works KSA</option>
+                        <option value="Ex-Works UAE" disabled>Ex-Works UAE</option>
+                        <option value="Ex-Works USA" disabled>Ex-Works USA</option>
+                        <option value="Ex-Works POLAND" disabled>Ex-Works POLAND</option>
+                        <option value="Ex-Works CHINA" disabled>Ex-Works CHINA</option>
+                        <option value="FCA KSA" disabled>FCA KSA</option>
+                        <option value="FCA UAE" selected>FCA UAE</option>
+                        <option value="FCA USA" >FCA USA</option>
+                        <option value="FCA POLAND" >FCA POLAND</option>
+                        <option value="FCA CHINA" >FCA CHINA</option>
+                        <option value="DDP" disabled>DDP</option>
+                        </select>
+                        <br>
+                        <br>
+    
+                </div>
+                <div class="remarks">
+                    <label for="remarks">Pickup:</label>
+                        <select name="remark" id="remark">
+                        <option value="KSA" disabled>KSA</option>
+                        <option value="UAE" selected>UAE</option>
+                        <option value="USA" >USA</option>
+                        <option value="Poland" >Poland</option>
+                        <option value="China" >China</option>
+                        </select>
+                </div>
+    
+                <div class="contact">
+                    <label for="contact">Contact:</label>
+                        <select name="contact" id="contact">
+                        <option value="Sreejith Nair" >Sreejith Nair</option>
+                        <option value="Prasanth Koroth" >Prasanth Koroth</option>
+                        <option value="Neil Baretto" >Neil Baretto</option>
+                        <option value="V Sujith" >V Sujith</option>
+                        <option value="Amit Tiwari" >Amit Tiwari</option>
+                        <option value="Geetha Chukka" >Geetha Chukka</option>
+                        </select>
+                </div>
+                
+                <button class="generate" type="submit" name="btn" value="generate">Generate <br> Docx</button>
+    
+            </form>
+    
+            <form action="/generatepdf" method="post">
+                <button  class="generate-pdf" type="submit" name="btn" value="generate-pdf">Generate <br>Pdf</button>
+            </form>
+    
+            <br>
+            <br>
+            </form>
+            
+            <br>
+            <!-- <form action="/view" method="post" id="viewForm">
+                <div class="view-container">
+                    <label for="view_quote">View Quote:</label>
+                    <select class="viewtxt" name="view_quote" id="view_quote" onchange="submitForm()">
+                        <option value="" disabled selected>Select an Excel file</option>
+                        {% for excel_file in excel_files %}
+                            <option value="{{ excel_file }}">{{ excel_file }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </form> -->
+        </div>
+    
+    
+         <br>
+         <br>
+         <form action="/deleted" method="post">
+            <button class="cancel" type="submit" name="btn" value="cancel">Cancel</button>
+         </form>
+         <!-- <form action="/generate" method="post">
+            <button class="generate" type="submit" name="btn" value="generate">Generate</button>
+         </form> -->
+    
+         <script>
+            function search() {
+                var partNumber = $('#part_no').val();
+                $.post('/search', {part_no: partNumber}, function(data) {
+                    var resultDiv = $('#description');
+                    resultDiv.empty();
+                    if (data.part_data) {
+                        resultDiv.append('<p><strong>Part Description:</strong> ' + data.part_data[1] + '</p>');
+                    } else {
+                        resultDiv.append('<p>No Part found with the given Part number.</p>');
+                    }
+                });
+            }
+    
+            function submitForm() {
+            document.getElementById("viewForm").submit();
+        }
+           
+        function viewExcel(fileName) {
+            window.location.href = "/view/" + fileName;
+        }
+        function reviseExcel(fileName) {
+            window.location.href = "/revise/" + fileName;
+        }
+    
 
    </script>
    

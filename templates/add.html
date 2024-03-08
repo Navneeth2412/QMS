@@ -163,12 +163,15 @@ body, html {
         .part_desc{
            position: absolute;
            right: 700px;
-           top: 425px; /*39.5*/
+           top: 610px; /*39.5*/
         }
         .subjectdiv{
-           left: 200px;
-           top: 290px;
+           left: 230px;
+           top: 590px;
            position:absolute;
+        }
+        .subject{
+           margin-left:80px
         }
         .addquote{
            border-radius: 5px;
@@ -191,13 +194,14 @@ body, html {
        /* display: flex; Create a flex container */
        /* align-items: center; Align button and input vertically */
        position: absolute; /* Fix the container to the viewport */
-       right: 150px; /* Set right margin for the container */
+       right: 300px;
+       top: 350px; /* Set right margin for the container */
        transform: translateX(-25%); /* Center the container horizontally */
        }
         .cancel{
            left: 12%;
-           
-           position: absolute;
+           bottom: 50px;
+           position: relative;
            transform: translateX(-30%);
         }   
         /* .generate{
@@ -207,18 +211,18 @@ body, html {
            transform: translateX(-30%);
         }       */
         .incoterms{
-           left: 200px;
-           top:330px;
-           position:absolute;
+           right: 1100px;
+           bottom:0px;
+           position:relative;
         }
         .remarks{
-           left: 200px;
-           top:370px;
-           position:absolute;
+           right: 1190px;
+           bottom:0px;
+           position:relative;
         }
         .contact{
-           right:250px;
-           top:390px;
+           right:390px;
+           top:500px;
            position:absolute;
         }
         .desc{
@@ -228,6 +232,11 @@ body, html {
            border: 1px solid #948f8f;
            padding: 7px;
         }
+        .customer-detail{
+           margin-left:230px;
+           margin-top: 100px;
+        }
+        
         #demo { border-collapse: collapse; }
         #demo tr:nth-child(odd) { background: #f2f2f2; }
         #demo td { padding: 10px; }
@@ -247,7 +256,7 @@ body, html {
 
        <div class="right-buttons">
            <form  action="/createquote" method="post">
-               <button class="addquote" type="submit" name="btn" value="addquote">Create New Quote</button>
+               <button class="addquote" type="submit" name="btn" value="addquote" onclick="clearStoredFormValues()">Create New Quote</button>
            </form>
            <div class="dropdown">
                <button class="dropbtn">Revise Quote</button>
@@ -282,89 +291,17 @@ body, html {
        <div class="filename"><p><b>Time:</b> {{ date_time }}</p></div>
    {% endif %}
     <h2 style="color: #860100;">QUOTATION</h2>
-       <div>
-           <br>
-           <form action="/generate" method="post" class="customer" style="text-align: right; margin-right: 400px;">
-               <div class="customer-container">
-               <label for="cust_ref">Customer Ref:</label>
-               <input type="text" class="cust_ref"  id="cust_ref" name="cust_ref" required value="{{ request.form['cust_ref'] }}" > <br><br>
-               <label for="p_no">Project No:</label>
-               <input type="text" class="p_no"  id="p_no" name="p_no" style="margin-left:23px" value="{{ request.form['p_no'] }}"> <br><br>
-               <label for="p_name">Project Name:</label>
-               <input type="text" class="p_name"  id="p_name" name="p_name" value="{{ request.form['p_name'] }}" > <br><br>
-               </div>
-               <div class="subjectdiv">
-               <label for="subject">Subject:</label>
-               <input type="text" class="subject" id="subject" name="subject"><br><br>
-               </div>
-               <div class="incoterms">
-                   <label for="inco">Incoterms:</label>
-                       <select name="inco" id="inco">
-                       <option value="Ex-Works KSA" disabled>Ex-Works KSA</option>
-                       <option value="Ex-Works UAE" disabled>Ex-Works UAE</option>
-                       <option value="Ex-Works USA" disabled>Ex-Works USA</option>
-                       <option value="Ex-Works POLAND" disabled>Ex-Works POLAND</option>
-                       <option value="Ex-Works CHINA" disabled>Ex-Works CHINA</option>
-                       <option value="FCA KSA" disabled>FCA KSA</option>
-                       <option value="FCA UAE" selected>FCA UAE</option>
-                       <option value="FCA USA" >FCA USA</option>
-                       <option value="FCA POLAND" >FCA POLAND</option>
-                       <option value="FCA CHINA" >FCA CHINA</option>
-                       <option value="DDP" disabled>DDP</option>
-                       </select>
-                       <br>
-                       <br>
-
-               </div>
-               <div class="remarks">
-                   <label for="remarks">Pickup:</label>
-                       <select name="remark" id="remark">
-                       <option value="KSA" disabled>KSA</option>
-                       <option value="UAE" selected>UAE</option>
-                       <option value="USA" >USA</option>
-                       <option value="Poland" >Poland</option>
-                       <option value="China" >China</option>
-                       </select>
-               </div>
-
-               <div class="contact">
-                   <label for="contact">Contact:</label>
-                       <select name="contact" id="contact">
-                       <option value="Sreejith Nair" >Sreejith Nair</option>
-                       <option value="Prasanth Koroth" >Prasanth Koroth</option>
-                       <option value="Neil Baretto" >Neil Baretto</option>
-                       <option value="V Sujith" >V Sujith</option>
-                       <option value="Amit Tiwari" >Amit Tiwari</option>
-                       <option value="Geetha Chukka" >Geetha Chukka</option>
-                       </select>
-               </div>
-               
-               <button class="generate" type="submit" name="btn" value="generate">Generate <br> Docx</button>
-
-           </form>
-
-           <form action="/generatepdf" method="post">
-               <button  class="generate-pdf" type="submit" name="btn" value="generate-pdf">Generate <br>Pdf</button>
-           </form>
-
-           <br>
-           <br>
-           </form>
-           
-           <br>
-           <!-- <form action="/view" method="post" id="viewForm">
-               <div class="view-container">
-                   <label for="view_quote">View Quote:</label>
-                   <select class="viewtxt" name="view_quote" id="view_quote" onchange="submitForm()">
-                       <option value="" disabled selected>Select an Excel file</option>
-                       {% for excel_file in excel_files %}
-                           <option value="{{ excel_file }}">{{ excel_file }}</option>
-                       {% endfor %}
-                   </select>
-               </div>
-           </form> -->
-       </div>
-   
+    <div class="customer-detail" style="width: 100%; min-height: 200px;">
+       <table border="1">
+           <tbody>
+               {% for item in cust_detail %}
+                   <tr>
+                       <td>{{ item }}</td>
+                   </tr>
+               {% endfor %}
+           </tbody>
+       </table>
+   </div>
    
     <!-- Quotation Section       -->
     <br>
@@ -380,8 +317,8 @@ body, html {
            </div>
            <br>
             <label for="quantity">Quantity:</label>
-            <input type="number" min="0" step="1" style="margin-left:105px" id="quantity" name="quantity" placeholder="Enter Quantity..." required>
-            <button class ="add" type="submit" name="btn" value="copy" formaction="/copy">Add</button>
+            <input type="number" min="0" step="1" style="margin-left:101px" id="quantity" name="quantity" placeholder="Enter Quantity..." required>
+            <button class ="add" type="submit" name="btn" value="copy" formaction="/copy" onclick="storeFormValuesAndSubmit('/copy')">Add</button>
              <br>
         </form>
         <br>
@@ -400,7 +337,7 @@ body, html {
         <br>
         <br>
     </div>
-
+   
  
 
    <div class="table-section">
@@ -425,7 +362,88 @@ body, html {
    
        <br>
    </div>
-   
+   <div>
+       <br>
+       <form action="/generate" method="post" class="customer" style="text-align: right; margin-right: 400px;">
+           <div class="customer-container">
+           <label for="cust_ref">Customer Ref:</label>
+           <input type="text" class="cust_ref"  id="cust_ref" name="cust_ref" required value="{{ request.form['cust_ref'] | default('') }}" > <br><br>
+           <label for="p_no">Project No:</label>
+           <input type="text" class="p_no"  id="p_no" name="p_no" style="margin-left:23px" value="{{ request.form['p_no'] }}"> <br><br>
+           <label for="p_name">Project Name:</label>
+           <input type="text" class="p_name"  id="p_name" name="p_name" value="{{ request.form['p_name'] }}" > <br><br>
+           </div>
+           <div class="subjectdiv">
+           <label for="subject">Subject:</label>
+           <input type="text" class="subject" id="subject" name="subject"><br><br>
+           </div>
+           <div class="incoterms">
+               <label for="inco">Incoterms:</label>
+                   <select name="inco" id="inco">
+                   <option value="Ex-Works KSA" disabled>Ex-Works KSA</option>
+                   <option value="Ex-Works UAE" disabled>Ex-Works UAE</option>
+                   <option value="Ex-Works USA" disabled>Ex-Works USA</option>
+                   <option value="Ex-Works POLAND" disabled>Ex-Works POLAND</option>
+                   <option value="Ex-Works CHINA" disabled>Ex-Works CHINA</option>
+                   <option value="FCA KSA" disabled>FCA KSA</option>
+                   <option value="FCA UAE" selected>FCA UAE</option>
+                   <option value="FCA USA" >FCA USA</option>
+                   <option value="FCA POLAND" >FCA POLAND</option>
+                   <option value="FCA CHINA" >FCA CHINA</option>
+                   <option value="DDP" disabled>DDP</option>
+                   </select>
+                   <br>
+                   <br>
+
+           </div>
+           <div class="remarks">
+               <label for="remarks">Pickup:</label>
+                   <select name="remark" id="remark">
+                   <option value="KSA" disabled>KSA</option>
+                   <option value="UAE" selected>UAE</option>
+                   <option value="USA" >USA</option>
+                   <option value="Poland" >Poland</option>
+                   <option value="China" >China</option>
+                   </select>
+           </div>
+
+           <div class="contact">
+               <label for="contact">Contact:</label>
+                   <select name="contact" id="contact">
+                   <option value="Sreejith Nair" >Sreejith Nair</option>
+                   <option value="Prasanth Koroth" >Prasanth Koroth</option>
+                   <option value="Neil Baretto" >Neil Baretto</option>
+                   <option value="V Sujith" >V Sujith</option>
+                   <option value="Amit Tiwari" >Amit Tiwari</option>
+                   <option value="Geetha Chukka" >Geetha Chukka</option>
+                   </select>
+           </div>
+           
+           <button class="generate" type="submit" name="btn" value="generate" >Generate <br> Docx</button>
+
+       </form>
+
+       <form action="/generatepdf" method="post">
+           <button  class="generate-pdf" type="submit" name="btn" value="generate-pdf">Generate <br>Pdf</button>
+       </form>
+
+       <br>
+       <br>
+       </form>
+       
+       <br>
+       <!-- <form action="/view" method="post" id="viewForm">
+           <div class="view-container">
+               <label for="view_quote">View Quote:</label>
+               <select class="viewtxt" name="view_quote" id="view_quote" onchange="submitForm()">
+                   <option value="" disabled selected>Select an Excel file</option>
+                   {% for excel_file in excel_files %}
+                       <option value="{{ excel_file }}">{{ excel_file }}</option>
+                   {% endfor %}
+               </select>
+           </div>
+       </form> -->
+   </div>
 
 
     <br>
@@ -461,6 +479,52 @@ body, html {
    function reviseExcel(fileName) {
        window.location.href = "/revise/" + fileName;
    }
+
+   function storeFormValuesAndSubmit(action) {
+       var formData = {
+           part_no: $('#part_no').val(),
+           quantity: $('#quantity').val(),
+           cust_ref: $('#cust_ref').val(),
+           p_no: $('#p_no').val(),
+           p_name: $('#p_name').val(),
+           subject: $('#subject').val(),
+           inco: $('#inco').val(),
+           remark: $('#remark').val(),
+           contact: $('#contact').val(),
+           // Add other form fields as needed
+       };
+
+       // Store form data in session storage
+       sessionStorage.setItem('formData', JSON.stringify(formData));
+
+       // Submit the form
+       window.location.href = action;
+   }
+
+   // Function to clear stored form values
+   function clearStoredFormValues() {
+       sessionStorage.removeItem('formData');
+   }
+
+   // Function to check for stored form values and populate the form
+   $(document).ready(function () {
+       var storedFormData = sessionStorage.getItem('formData');
+       if (storedFormData) {
+           storedFormData = JSON.parse(storedFormData);
+           $('#part_no').val(storedFormData.part_no);
+           $('#quantity').val(storedFormData.quantity);
+           $('#cust_ref').val(storedFormData.cust_ref);
+           $('#p_no').val(storedFormData.p_no);
+           $('#p_name').val(storedFormData.p_name);
+           $('#subject').val(storedFormData.subject);
+           $('#inco').val(storedFormData.inco);
+           $('#remark').val(storedFormData.remark);
+           $('#contact').val(storedFormData.contact);
+           // Populate other form fields as needed
+       }
+   });
+
+   
 
    </script>
    
