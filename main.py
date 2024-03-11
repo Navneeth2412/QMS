@@ -10,7 +10,7 @@ from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import DataRequired, Length, EqualTo
 from docx2pdf import convert
 import os
-import smtplib
+from flaskwebgui import FlaskUI
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import smtplib 
@@ -18,6 +18,7 @@ import os
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.urandom(24).hex()
+
 # Initialize ws as a global variable
 ws = None
 
@@ -1161,5 +1162,7 @@ def index():
 
 #----------MAIN----------
 if __name__ == '__main__':
-    app.run(debug=True)
+
+    ui = FlaskUI(app)
+    ui.run()
 
