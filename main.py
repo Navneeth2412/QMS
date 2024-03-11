@@ -11,11 +11,6 @@ from wtforms.validators import DataRequired, Length, EqualTo
 from docx2pdf import convert
 import os
 
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
-import smtplib 
-import os
-
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.urandom(24).hex()
 
@@ -71,27 +66,27 @@ def logout():
     # Redirect to the login page
     return redirect(url_for('login'))
 
-@app.route('/reset_password', methods=['GET', 'POST'])
-def reset_password():
-    form = ResetPasswordForm()
-    if form.validate_on_submit():
-        userid = form.userid.data
+# @app.route('/reset_password', methods=['GET', 'POST'])
+# def reset_password():
+#     form = ResetPasswordForm()
+#     if form.validate_on_submit():
+#         userid = form.userid.data
 
-        # Check if user exists (replace with database check)
-        if userid in users:
-            # Generate a random password reset token (consider using a secure library)
-            # Placeholder for generation, replace with a secure method (e.g., using secrets module)
-            reset_token = os.urandom
+#         # Check if user exists (replace with database check)
+#         if userid in users:
+#             # Generate a random password reset token (consider using a secure library)
+#             # Placeholder for generation, replace with a secure method (e.g., using secrets module)
+#             reset_token = os.urandom
 
-            # Send a password reset email to the user's email address
-            send_reset_email(users[userid]['email'], reset_token)
+#             # Send a password reset email to the user's email address
+#             send_reset_email(users[userid]['email'], reset_token)
 
-            flash('A password reset link has been sent to your email address.', 'success')
-            return redirect(url_for('login'))
-        else:
-            flash('User not found. Please enter a valid user ID.', 'danger')
+#             flash('A password reset link has been sent to your email address.', 'success')
+#             return redirect(url_for('login'))
+#         else:
+#             flash('User not found. Please enter a valid user ID.', 'danger')
 
-    return render_template('reset_password.html', form=form)
+#     return render_template('reset_password.html', form=form)
 
 
 
