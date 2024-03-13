@@ -10,6 +10,8 @@ from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import DataRequired, Length, EqualTo
 from docx2pdf import convert
 import os
+from flask_mail import Mail,Message
+
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.urandom(24).hex()
@@ -23,7 +25,13 @@ users = {'N0025': {'userid': 'N0025', 'password': 'ww',},
          'N0035':{'userid': 'N0035', 'password':'qq'}}
 
 
-
+app.config['MAIL_SERVER']='smtp.gmail.com'
+app.config['MAIL_PORT'] = 465
+app.config['MAIL_USERNAME'] = 'navneethpras@gmail.com'
+app.config['MAIL_PASSWORD'] = 'ugzk xyzd nhgx polo'
+app.config['MAIL_USE_TLS'] = False
+app.config['MAIL_USE_SSL'] = True
+mail = Mail(app)
 
 class LoginForm(FlaskForm):
     userid = StringField('User ID', validators=[DataRequired()])
@@ -350,8 +358,18 @@ def generate():
         # offer.append(cust_ref)
 
         filled_doc_path = fill_template(data_list,off_list,rev_name)
+        print(off_list)
+        if True:
 
+            msg = Message('New Quote from ' + userid, sender =   'navneethpras@gmail.com', recipients = ['neil.baretto@woodward.com'])
+            msg.body = "Hey Neil, " +file[:14]+ " this is a new quote that has been created by" + userid
+            document_quote = filename+'.docx'
+            with app.open_resource(document_quote) as fp:
+                msg.attach(filename, "application/msword", fp.read())
+            mail.send(msg)
         return send_file(filled_doc_path, as_attachment=True) 
+    
+        
     excel_files = get_excel_files()
     return render_template('index.html',filename=filename,date=d, date_time=d,result_message=None, sheet=ws,excel_files=excel_files)
 
@@ -580,7 +598,7 @@ def indexrev():
 def addrev():
     global ws 
     global d
-    wb = openpyxl.load_workbook(file)
+    wb = openpyxl.load_workbook(filename+'.xlsx')
     res = len(wb.sheetnames)
     ws = wb.worksheets[res-1]
     now = datetime.now() # current date and time
@@ -645,7 +663,7 @@ def addrev():
 
 
             # Specify the output file path
-        filename1 = file
+        filename1 = filename+'.xlsx'
 
             # Save the target workbook to a new file
         wb.save(filename1)
@@ -662,14 +680,14 @@ def addrev():
 def cancelrev():
     now = datetime.now() # current date and time
     date_time = now.strftime("%I:%M %p")
-    wb = openpyxl.load_workbook(file)
+    wb = openpyxl.load_workbook(filename+'.xlsx')
     print(file)
     sheet = wb.sheetnames[-1]
     print(sheet)
     print(wb.sheetnames[-1])
     sheetname = wb.get_sheet_by_name(sheet)
     wb.remove_sheet(sheetname)
-    wb.save(file)
+    wb.save(filename+'.xlsx')
     # if len(wb.sheetnames) <=2:
     #     filename = file[:14]] + "-" + wb.sheetnames[-1]
     # else:
@@ -680,9 +698,10 @@ def cancelrev():
 #-------------------------------UPDATE FOR REVISION------------------------------
 @app.route('/update', methods=['POST'])
 def update():
-    wb = openpyxl.load_workbook(file)
+    wb = openpyxl.load_workbook(filename+'.xlsx')
     res = len(wb.sheetnames)
     ws = wb.worksheets[res-1]
+    print(ws.max_row)
     now = datetime.now() # current date and time
     date_time = now.strftime("%I:%M %p")
 
@@ -691,7 +710,7 @@ def update():
     quant = request.form['quantity']
 
     price_column = 'D'
-
+    print(ws[price_column + str(ws.max_row)].value)
     price = float(ws[price_column + str(ws.max_row)].value)
     print(price)
     price2 = format(price,'.2f')
@@ -703,7 +722,7 @@ def update():
         if ws.cell(row=cell,column=1).value == int(slno):
             ws.cell(row=cell,column=5,value=quant)
             ws.cell(row=cell,column=6,value=total_pr)
-    wb.save(file)
+    wb.save(filename+'.xlsx')
     excel_files = get_excel_files()
     return render_template("revise.html",filename=filename1,date=d, date_time=date_time,result_message=None, sheet=ws,excel_files=excel_files,cust_detail=cust_detail)
 
@@ -716,7 +735,7 @@ def deleterev():
     now = datetime.now() # current date and time
     date_time = now.strftime("%I:%M %p")
 
-    wb = openpyxl.load_workbook(file)
+    wb = openpyxl.load_workbook(filename+'.xlsx')
     res = len(wb.sheetnames)
     ws = wb.worksheets[res-1]
     # if request.method == ['POST']:
@@ -730,7 +749,7 @@ def deleterev():
         print(type(ws.cell(row=row_number, column=1).value))
         if ws.cell(row=row_number, column=1).value == int(part_no):
             del_row(ws, row_number)
-            wb.save(file)
+            wb.save(filename+'.xlsx')
             break
     excel_files = get_excel_files()
     return render_template('revise.html', date=d,filename = filename1,date_time=date_time,result_message=None,sheet=ws,excel_files=excel_files,cust_detail=cust_detail)
