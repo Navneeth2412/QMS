@@ -1,4 +1,5 @@
-from flask import Flask, render_template, request ,redirect, url_for , send_file , flash, session
+from flask import Flask, render_template, request ,redirect, url_for , send_file , flash, session 
+
 import openpyxl
 from openpyxl.styles import Font
 from openpyxl import load_workbook, Workbook
@@ -16,13 +17,13 @@ from flask_mail import Mail,Message
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.urandom(24).hex()
 
+
 # Initialize ws as a global variable
 ws = None
 
 cust_detial = None
 
-users = {'N0025': {'userid': 'N0025', 'password': 'ww',},
-         'N0035':{'userid': 'N0035', 'password':'qq'}}
+users = {'N0025': {'userid': 'N0025', 'password': 'Imco',}}
 
 
 app.config['MAIL_SERVER']='smtp.gmail.com'
@@ -70,6 +71,7 @@ def login():
 def logout():
     # Clear the user session
     session.pop('user', None)
+
     flash('', 'success')
     # Redirect to the login page
     return redirect(url_for('login'))
@@ -203,6 +205,7 @@ def fill_template(data,offer,rev_name):
 
 @app.route('/generatepdf', methods=['POST'])
 def generatepdf():
+    excel_files = get_excel_files()
     if request.method=='POST':
         print("inside pdf")
         print(file)
@@ -218,9 +221,9 @@ def generatepdf():
         except Exception as e:
             result_message = f"Error: {str(e)}"
 
-        return render_template('index.html', filename=filename, date=d, date_time=d, result_message=result_message, sheet=ws)
-
-    return render_template('index.html', filename=filename, date=d, date_time=d, result_message=None, sheet=ws)
+        return render_template('index.html', filename=filename, date=d, date_time=d, result_message=result_message, sheet=ws,excel_files=excel_files)
+    
+    return render_template('index.html', filename=filename, date=d, date_time=d, result_message=None, sheet=ws,excel_files=excel_files)
 
 
 
@@ -308,8 +311,10 @@ def generate():
        
         
         data_list = []
-        total = 0
+        total = 0.00
         for row in range(2, ws.max_row + 1):  # Assuming data starts from row 2
+            print(type(float(ws.cell(row=row,column=6).value)))
+            print("total : " , total, type(total))
             total += float(ws.cell(row=row,column=6).value)
             data = {
                 'slno': ws.cell(row=row, column=1).value,
@@ -320,7 +325,8 @@ def generate():
                 'total_price': ws.cell(row=row, column=6).value,
             }    
             document.add_paragraph()
-            total = format(total,'.2f')
+            total = float(format(total,'.2f'))
+            print("total after format:", total,type(total))
             data_list.append(data)
         
         print(data_list)
@@ -359,14 +365,14 @@ def generate():
 
         filled_doc_path = fill_template(data_list,off_list,rev_name)
         print(off_list)
-        if True:
+        
 
-            msg = Message('New Quote from ' + userid, sender =   'navneethpras@gmail.com', recipients = ['neil.baretto@woodward.com'])
-            msg.body = "Hey Neil, " +file[:14]+ " this is a new quote that has been created by" + userid
-            document_quote = filename+'.docx'
-            with app.open_resource(document_quote) as fp:
-                msg.attach(filename, "application/msword", fp.read())
-            mail.send(msg)
+        msg = Message('New Quote from ' + userid, sender =   'nnoreply@demo.com', recipients = ['navneethpras@gmail.com'])
+        msg.body = "Hey Neil, " +file[:14]+ " this is a new quote that has been created by" + userid
+        document_quote = filename+'.docx'
+        with app.open_resource(document_quote) as fp:
+            msg.attach(filename, "application/msword", fp.read())
+        mail.send(msg)
         return send_file(filled_doc_path, as_attachment=True) 
     
         
@@ -742,7 +748,7 @@ def deleterev():
     part_no = request.form['slno']
     print("delete id ====", part_no, type(part_no))
         
-        
+            
 
     for row_number in range(2, ws.max_row   +1):
         print("row number ======" ,row_number)
@@ -767,12 +773,12 @@ def totalrev():
         ws = wb.worksheets[res-1]
         
         total = 0.00
-        result_column = 'E'
+        result_column = 'F'
         for cell in range(2,ws.max_row+1):
-            t = float(ws.cell(row=cell,column=5).value)
+            t = float(ws.cell(row=cell,column=6).value)
             total += t
 
-        ftotal = round(total,2)
+        ftotal = format(total,'.2f')
         ws[result_column + str(ws.max_row+1)].value = ftotal
 
     for cell in range(1,ws.max_column):
@@ -1133,16 +1139,16 @@ def total():
     now = datetime.now() # current date and time
     date_time = now.strftime("%I:%M %p")
     if request.method == 'POST':
-        wb = load_workbook(file)
+        wb = load_workbook(filename + '.xlsx')
         ws = wb.active
         total = 0.00
-        result_column = 'E'
+        result_column = 'F'
         for cell in range(2,ws.max_row+1):
-            t = float(ws.cell(row=cell,column=5).value)
+            t = float(ws.cell(row=cell,column=6).value)
             total += t
             
        
-        ftotal = round(total,2)
+        ftotal = format(total,'.2f')
         ws[result_column + str(ws.max_row+1)].value = ftotal
     
 
