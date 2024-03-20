@@ -306,29 +306,29 @@ body, html {
      <!-- Quotation Section       -->
      <br>
      <div class="quotation-section">
-         <form  method="post">
             <div>  
                 <br>
                 <br>
                 <br>
-                <div class="part_desc"  id="description"></div>
-             <label for="part_no">Part Number:</label>
-             <input type="text" style="margin-left:70px" id="part_no" name="part_no" placeholder="Enter Part Number..." value="{{ request.form['part_no'] }}" oninput="search()"  required>  
-            </div>
-            <br>
-             <label for="quantity">Quantity:</label>
-             <input type="number" min="0" step="1" style="margin-left:101px" id="quantity" name="quantity" placeholder="Enter Quantity..." required>
-             <button class ="add" type="submit" name="btn" value="copy" formaction="/copy" onclick="storeFormValuesAndSubmit('/copy')">Add</button>
-              <br>
-         </form>
+            <form action="/copy" method="post">
+                    <div class="part_desc"  id="description"></div>
+                <label for="part_no">Part Number:</label>
+                <input type="text" style="margin-left:70px" id="part_no" name="part_no" placeholder="Enter Part Number..." value="{{ request.form['part_no'] }}" oninput="search()"  required>  
+                </div>
+                <br>
+                <label for="quantity">Quantity:</label>
+                <input type="number" min="0" step="1" style="margin-left:101px" id="quantity" name="quantity" placeholder="Enter Quantity..." required>
+                <button class ="add" type="submit" name="btn" value="copy"  onclick="storeFormValuesAndSubmit('/copy')">Add</button>
+                <br>
+            </form>
          <br>
-    
+         <!--formaction="/copy"-->
          <form action="/delete" method="post">
              <label for="del_id">Part Number to Delete:</label>
              <input type="text" id="del_id" name="del_id" placeholder="Enter Part Number..." >
              <button type="submit" name="btn" value="delete">Delete!</button>
          </form>
- 
+         
          <br>
          <form action="/total" method="post">
             <button type="subimt" name="btn" value="total">Get Total</button>

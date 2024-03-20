@@ -209,12 +209,14 @@ def generatepdf():
     if request.method=='POST':
         print("inside pdf")
         print(file)
-        docx = file[:14] +'.docx'
+        docx = filename1 + '.docx'
+        print(filename1)
+        print(docx)
         try:
             pdf_file = convert(docx)
             if pdf_file is not None:
                 print("after convert")
-                new_file = file[:14] + '.pdf'
+                new_file = filename1 + '.pdf'
                 return send_file(pdf_file, as_attachment=True, mimetype='application/pdf', download_name=new_file)
             else:
                 result_message = "Error generating PDF"
@@ -396,6 +398,11 @@ def copy_row(part_data,target_sheet, quantity):
         target_sheet.cell(row=target_max, column=count, value=cell)
     
     target_sheet.cell(row=target_max, column=target_column-2, value=quantity)
+    # target_sheet.cell(row=target_max, column=7, value= cust)
+    # target_sheet.cell(row=target_max, column=8, value=pno)
+    # target_sheet.cell(row=target_max, column=9, value=pname)
+    # target_sheet.cell(row=target_max, column=10, value=cont)
+    # target_sheet.cell(row=target_max, column=11, value=subj)
     print("printing this")
     print(target_sheet.cell(row=target_max, column=target_column-2).value)
 
@@ -404,7 +411,8 @@ def copy_row(part_data,target_sheet, quantity):
 def del_row(ws, row_nummber):
     # Your existing del_row function
     ws.delete_rows(row_nummber)
-
+    for count in range(2,ws.max_row+1):
+        ws.cell(row=count,column=1,value=count-1)
     return render_template('revise.html', result_message=None, sheet=ws)
 
 
@@ -468,7 +476,7 @@ def create_file(user):
         wb.save(first_file)
     
         ws = wb.active
-        headers = ['SERIAL NO', 'PART NUMBER', 'ITEM DESCRIPTION', 'UNIT PRICE', 'QTY', 'TOTAL PRICE']
+        headers = ['SERIAL NO', 'PART NUMBER', 'ITEM DESCRIPTION', 'UNIT PRICE', 'QTY', 'TOTAL PRICE','CUSTOMER REF', 'PROJECT NO', 'PROJECT NAME', 'CONTACT NAME', 'SUBJECT']
 
         for cell, header in enumerate(headers, start=1):    
             ws.cell(row=1, column=cell, value=header)
@@ -859,6 +867,7 @@ def delete():
                 break
         excel_files = get_excel_files()
         return render_template('index.html',filename=filename,date=d, date_time=date_time,result_message=None,sheet=ws,excel_files=excel_files,cust_detail=cust_detail)
+    return render_template('index.html',filename=filename,date=d, date_time=date_time,result_message=None,sheet=ws,excel_files=excel_files,cust_detail=cust_detail)
     
 
 #----------------------------VIEWING QUOTE-----------------------------------
@@ -1058,7 +1067,11 @@ def copy():
         part_no = request.form['part_no']
         quantity = request.form['quantity']
 
-
+        # cust_ref = request.form['cust_ref']
+        # p_no = request.form['p_no']
+        # p_name = request.form['p_name']
+        # contact = request.form['contact']
+        # subject = request.form['subject']
         # Load the source workbook
         source_workbook = load_workbook("price2.xlsx", read_only=True)
         source_sheet = source_workbook.active
@@ -1070,7 +1083,7 @@ def copy():
 
         print(part_data)
         
-      
+        #,cust_ref,p_no,p_name,contact,subject
         copy_row(part_data,ws,quantity)
 
         if ws.cell(row=ws.max_row-1,column=1).value == 'SERIAL NO':
